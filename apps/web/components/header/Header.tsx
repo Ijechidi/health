@@ -16,7 +16,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
           {/* Logo */}
           <div className="flex items-center">
             <div className="flex-shrink-0 flex justify-center items-center gap-2">
-              <span className="text-2xl font-bold text-primary">health </span> <Heart size={20} /> 
+              <span className="text-2xl font-bold text-primary">MedEasy </span> <Heart size={20} /> 
             </div>
           </div>
 
@@ -25,7 +25,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
-                  <Nav className="" />
+                  <Nav className="text-card" />
             <Button variant="default" size="sm">
               Register
             </Button>

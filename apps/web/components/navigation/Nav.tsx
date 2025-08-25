@@ -44,9 +44,9 @@ const Nav: React.FC<NavProps> = ({ className = '' }) => {
       {/* Desktop Navigation */}
       <div className="hidden md:block">
         <div className='flex items-center lg:gap-4'>
-            <div className="flex items-baseline  gap-2">
+            <div className="flex items-baseline  gap-4">
               {navLinks.map((link) => (
-                <NavLinkItem key={link.id} link={link} />
+                <NavLinkItem className='text-foreground font-bold hover:opacity-40 transition-all ' key={link.id} link={link} />
               ))}
             </div>
             <span >

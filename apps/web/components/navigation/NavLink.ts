@@ -8,12 +8,12 @@ export interface NavLink {
 export const navLinks: NavLink[] = [
   {
     id: 'home',
-    label: 'Home',
+    label: 'Accueil',
     href: '#home'
   },
   {
     id: 'find-doctor',
-    label: 'Find Doctor',
+    label: 'Trouver un médecin',
     href: '#find-doctor'
   },
   {
@@ -23,12 +23,12 @@ export const navLinks: NavLink[] = [
   },
   {
     id: 'about',
-    label: 'About Us',
+    label: 'À propos',
     href: '#about'
   },
   {
     id: 'contact',
-    label: 'Contact Us',
+    label: 'Contactez-nous',
     href: '#contact'
   }
 ];

@@ -13,11 +13,11 @@ import {
 
 export default function SearchDoctor() {
   const [location, setLocation] = useState('');
-  const [condition, setCondition] = useState('');
+ 
   const [category, setCategory] = useState('');
 
   const handleSearch = () => {
-    console.log({ location, condition, category });
+    console.log({ location, category });
   };
 
   return (
@@ -36,19 +36,11 @@ export default function SearchDoctor() {
           />
         </div>
 
-        <div className="flex">
-          <Input
-            type="text"
-            placeholder="Condition"
-            value={condition}
-            onChange={(e) => setCondition(e.target.value)}
-            className="w-full"
-          />
-        </div>
+   
           <div className="flex-1 min-w-[120px]">
         <Select value={category} onValueChange={setCategory}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Category" />
+            <SelectValue placeholder="Specialites" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="cardiology">Cardiology</SelectItem>
