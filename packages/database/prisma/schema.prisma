@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+/// =========================
+/// 📌 Enumération des rôles
+/// =========================
+/// - patient : utilisateur venant se faire soigner.
+/// - medecin : médecin attaché à l’hôpital.
+/// - admin : administrateur de l’hôpital.
+enum Role {
+  patient
+  medecin
+  admin
+}
+
+enum FonctionAdmin {
+  gestionnaire
+  super_admin
+}
+
+enum Sexe {
+  Homme
+  Femme
+  Autre
+}
+
+enum GroupeSanguin {
+  A_POSITIF
+  A_NEGATIF
+  B_POSITIF
+  B_NEGATIF
+  AB_POSITIF
+  AB_NEGATIF
+  O_POSITIF
+  O_NEGATIF
+  INCONNU
+}
+
+enum StatutRendezVous {
+  CONFIRME
+  ANNULE
+  EN_ATTENTE
+  TERMINE
+}
+
+/// =========================
+/// 📌 Utilisateur global
+/// =========================
+model Utilisateur {
+  id           String      @id @default(uuid())
+  nom          String
+  prenom       String?
+  email        String      @unique
+  telephone    String?
+  dateCreation DateTime    @default(now())
+
+  // Relations
+  administrateur     Administrateur?   /// Profil administrateur lié à l’utilisateur
+  patient            Patient?          /// Profil patient lié à l’utilisateur
+  medecin            Medecin?          /// Profil médecin lié à l’utilisateur
+  rendezVous         RendezVous[]      /// Liste des rendez-vous liés à l’utilisateur
+  utilisateurHopitals UtilisateurHopital[] /// Rôles de l’utilisateur dans différents hôpitaux
+}
+
+/// =========================
+/// 📌 Administrateur
+/// =========================
+model Administrateur {
+  id       String        @id @default(uuid())
+  fonction FonctionAdmin @default(gestionnaire)
+  userId   String        @unique
+
+  // Relations
+  utilisateur Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade) /// Utilisateur associé
+}
+
+/// =========================
+/// 📌 Patient
+/// =========================
+model Patient {
+  id            String        @id @default(uuid())
+  dateNaissance DateTime
+  adresse       String?
+  groupeSanguin GroupeSanguin @default(INCONNU)
+  poids         Float?
+  taille        Float?
+  sexe          Sexe          @default(Homme)
+  userId        String        @unique
+
+  // Relations
+  utilisateur Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade) /// Utilisateur associé
+  documents   Document[]   /// Documents médicaux liés au patient
+  rendezVous  RendezVous[] /// Rendez-vous liés au patient
+}
+
+/// =========================
+/// 📌 Medecin
+/// =========================
+model Medecin {
+  id              String   @id @default(uuid())
+  specialiteId    String
+  numLicence      String   @unique
+  anneeExperience Int?
+  titre           String
+  userId          String   @unique
+
+  // Relations
+  utilisateur     Utilisateur @relation(fields: [userId], references: [id], onDelete: Cascade) /// Utilisateur associé
+  specialite      Specialite  @relation(fields: [specialiteId], references: [id]) /// Spécialité médicale du médecin
+  rendezVous      RendezVous[] /// Rendez-vous assignés au médecin
+  recommandations Recommandation[] /// Recommandations émises par le médecin
+}
+
+/// =========================
+/// 📌 Document
+/// =========================
+model Document {
+  id           String   @id @default(uuid())
+  titre        String
+  description  String?
+  dateCreation DateTime @default(now())
+  patientId    String?
+  url          String   /// URL du fichier document
+
+  // Relations
+  patient Patient? @relation(fields: [patientId], references: [id], onDelete: Cascade) /// Patient associé
+}
+
+/// =========================
+/// 📌 RendezVous
+/// =========================
+model RendezVous {
+  id            String           @id @default(uuid())
+  date          DateTime
+  heure         String
+  statut        StatutRendezVous @default(EN_ATTENTE)
+  utilisateurId String
+  medecinId     String
+  patientId     String
+
+  // Relations
+  utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id]) /// Utilisateur ayant créé le rendez-vous
+  medecin     Medecin     @relation(fields: [medecinId], references: [id]) /// Médecin associé au rendez-vous
+  patient     Patient     @relation(fields: [patientId], references: [id]) /// Patient associé au rendez-vous
+}
+
+/// =========================
+/// 📌 Hopital
+/// =========================
+model Hopital {
+  id           String   @id @default(uuid())
+  nom          String
+  adresse      String
+  description  String?
+  contact      String
+  localisation String?
+
+  // Relations
+  utilisateurHopitals UtilisateurHopital[] /// Liste des utilisateurs et leurs rôles dans l’hôpital
+}
+
+/// =========================
+/// 📌 Specialite
+/// =========================
+model Specialite {
+  id          String   @id @default(uuid())
+  nom         String
+  description String?
+
+  // Relations
+  medecins Medecin[] /// Médecins associés à cette spécialité
+}
+
+/// =========================
+/// 📌 Recommandation
+/// =========================
+model Recommandation {
+  id        String   @id @default(uuid())
+  contenu   String
+  medecinId String
+  date      DateTime @default(now())
+
+  // Relations
+  medecin Medecin @relation(fields: [medecinId], references: [id], onDelete: Cascade) /// Médecin ayant émis la recommandation
+}
+
+/// =========================
+/// 📌 UtilisateurHopital
+/// =========================
+model UtilisateurHopital {
+  id            String   @id @default(uuid())
+  utilisateurId String
+  hopitalId     String
+  role          Role     // rôle spécifique à cet hôpital
+  dateDebut     DateTime @default(now())
+  dateFin       DateTime?
+
+  // Relations
+  utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade) /// Utilisateur associé
+  hopital     Hopital     @relation(fields: [hopitalId], references: [id], onDelete: Cascade) /// Hôpital associé
+
+  @@unique([utilisateurId, hopitalId, role])
+}
