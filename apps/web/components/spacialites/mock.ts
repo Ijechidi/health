@@ -1,0 +1,96 @@
+import { Speciality } from "./SpecialityCard";
+import { specialiter } from "./utils";
+
+export const specialities: Speciality[] = [
+  {
+    id: "1",
+    name: "Neurologie",
+    description: "Étude et traitement du cerveau et du système nerveux",
+    image: specialiter.neurology,
+    url: "/specialities/neurologie",
+  },
+  {
+    id: "2",
+    name: "Cardiologie",
+    description: "Soins du cœur et du système cardiovasculaire",
+    image: specialiter.heart,
+    url: "/specialities/cardiologie",
+  },
+  {
+    id: "3",
+    name: "Pneumologie",
+    description: "Étude et traitement des poumons et des voies respiratoires",
+    image: specialiter.lungs,
+    url: "/specialities/pneumologie",
+  },
+  {
+    id: "4",
+    name: "Dermatologie",
+    description: "Soins de la peau et des tissus externes",
+    image: specialiter.bacteria,
+    url: "/specialities/dermatologie",
+  },
+  {
+    id: "5",
+    name: "Gastro-entérologie",
+    description: "Étude du système digestif",
+    image: specialiter.stomach,
+    url: "/specialities/gastro-enterologie",
+  },
+  {
+    id: "6",
+    name: "Dentisterie",
+    description: "Étude et soins des dents",
+    image: specialiter.tooth,
+    url: "/specialities/dentisterie",
+  },
+  {
+    id: "7",
+    name: "Orthopédie",
+    description: "Soins des os, articulations et muscles",
+    image: specialiter.foot,
+    url: "/specialities/orthopedie",
+  },
+  {
+    id: "8",
+    name: "Oncologie",
+    description: "Diagnostic et traitement du cancer",
+    image: specialiter.cervical_cancer,
+    url: "/specialities/oncologie",
+  },
+  {
+    id: "9",
+    name: "Médecine d’urgence",
+    description: "Traitement immédiat des maladies et blessures aiguës",
+    image: specialiter.ambulance,
+    url: "/specialities/medecine-urgence",
+  },
+  {
+    id: "10",
+    name: "Analyse clinique",
+    description: "Tests de laboratoire et diagnostics cliniques",
+    image: specialiter.clinical_a,
+    url: "/specialities/analyse-clinique",
+  },
+  {
+    id: "11",
+    name: "Infectiologie",
+    description: "Étude et traitement des maladies infectieuses",
+    image: specialiter.ribbon,
+    url: "/specialities/infectiologie",
+  },
+  {
+    id: "12",
+    name: "Système nerveux",
+    description: "Soins et soutien du système nerveux",
+    image: specialiter.nerve,
+    url: "/specialities/systeme-nerveux",
+  },
+  {
+    id: "13",
+    name: "Infections pulmonaires",
+    description: "Diagnostic et traitement des infections respiratoires",
+    image: specialiter.pneumonia,
+    url: "/specialities/infections-pulmonaires",
+  },
+];
