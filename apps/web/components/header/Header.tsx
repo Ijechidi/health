@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@repo/ui/components/button';
+import Link from 'next/link';
 import Nav from '../navigation/Nav';
 import { Heart } from 'lucide-react';
 
@@ -15,9 +16,9 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <div className="flex-shrink-0 flex justify-center items-center gap-2">
+            <Link href="/" className="flex-shrink-0 flex justify-center items-center gap-2" aria-label="Aller à l'accueil">
               <span className="text-2xl font-bold text-primary">MedEasy </span> <Heart size={20} /> 
-            </div>
+            </Link>
           </div>
 
           {/* Navigation Links */}
@@ -26,9 +27,11 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
           {/* Actions */}
           <div className="flex items-center space-x-4">
                   <Nav className="text-card" />
-            <Button variant="default" size="sm">
-              Register
-            </Button>
+            <Link href="/patient/auth/register">
+              <Button variant="default" size="sm">
+                S'inscrire
+              </Button>
+            </Link>
           </div>
         </div>
       </nav>

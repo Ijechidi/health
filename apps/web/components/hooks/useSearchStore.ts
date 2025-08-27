@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { hopitaux } from '../hopital/mockHotipal';
-import { specialities } from '../spacialites/mock';
+import { specialities } from '../specialities/mock';
 
 interface SearchState {
   location: string;

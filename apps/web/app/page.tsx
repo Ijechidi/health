@@ -1,7 +1,7 @@
 import HeroSection from "@/components/hero/HeroSection";
 import HopitalList from "@/components/hopital/HopitalList";
-import SpecialiterListe from "@/components/spacialites/SpecialiterListe";
-import SpecialiterSlides from "@/components/spacialites/SpecialiterSlides";
+import SpecialiterListe from "@/components/specialities/SpecialiterListe";
+import SpecialiterSlides from "@/components/specialities/SpecialiterSlides";
 import React from "react";
 import NoiseOverlay from '@repo/ui/components/design/NoiseOverlay';
 

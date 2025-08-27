@@ -10,7 +10,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@repo/ui/components/select';
-import { specialities } from './spacialites/mock';
+import { specialities } from './specialities/mock';
 import { useSearchStore } from './hooks/useSearchStore';
 
 export default function SearchDoctor() {
