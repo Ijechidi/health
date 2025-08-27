@@ -7,68 +7,74 @@ import { Button } from "@repo/ui/components/button";
 import { 
   Home, 
   Calendar, 
+  Users, 
   FileText, 
-  User, 
+  Stethoscope,
   Settings, 
-  Bell,
   LogOut,
   Heart,
-  Stethoscope
+  Activity
 } from "lucide-react";
 
 const navigationItems = [
   {
-    name: "Tableau de bord",
-    href: "/patient/dashboard",
+    name: "Accueil",
+    href: "/doctor",
     icon: Home,
+    description: "Tableau de bord"
+  },
+  {
+    name: "Dashboard",
+    href: "/doctor/dashboard",
+    icon: Activity,
     description: "Vue d'ensemble"
   },
   {
-    name: "Rendez-vous",
-    href: "/patient/appointments",
+    name: "Planning",
+    href: "/doctor/schedule",
     icon: Calendar,
     description: "Gérer mes RDV"
   },
   {
+    name: "Patients",
+    href: "/doctor/patients",
+    icon: Users,
+    description: "Base de patients"
+  },
+  {
+    name: "Consultations",
+    href: "/doctor/consultations",
+    icon: Stethoscope,
+    description: "Suivi des consultations"
+  },
+  {
     name: "Documents",
-    href: "/patient/documents",
+    href: "/doctor/documents",
     icon: FileText,
-    description: "Mes documents"
-  },
-  {
-    name: "Profil",
-    href: "/patient/profile",
-    icon: User,
-    description: "Informations personnelles"
-  },
-  {
-    name: "Notifications",
-    href: "/patient/notification",
-    icon: Bell,
-    description: "Alertes et messages"
+    description: "Ordonnances, rapports"
   },
   {
     name: "Paramètres",
-    href: "/patient/settings",
+    href: "/doctor/settings",
     icon: Settings,
     description: "Configuration"
   }
 ];
 
-export default function Sidebar() {
+export default function DoctorSidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="h-full bg-background border rounded-lg p-4 flex flex-col">
+    <div className="h-full bg-background border-r p-4 flex flex-col">
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Heart className="h-6 w-6 text-primary" />
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <Heart className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-foreground">MedEasy</h1>
-            <p className="text-xs text-muted-foreground"> Portal Patient</p>
+            <h1 className="font-bold text-lg text-foreground">HealthApp</h1>
+            <p className="text-xs text-muted-foreground">Espace Médecin</p>
           </div>
         </div>
       </div>
@@ -85,15 +91,15 @@ export default function Sidebar() {
                 variant={isActive ? "default" : "ghost"}
                 className={`w-full justify-start h-auto p-3 ${
                   isActive 
-                    ? "bg-primary text-primary-foreground" 
-                    : "hover:bg-muted"
+                    ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700' 
+                    : 'hover:bg-blue-50 hover:text-blue-700'
                 }`}
               >
                 <Icon className="h-4 w-4 mr-3" />
                 <div className="text-left">
                   <div className="font-medium">{item.name}</div>
                   <div className={`text-xs ${
-                    isActive ? "text-primary-foreground/70" : "text-muted-foreground"
+                    isActive ? "text-blue-100" : "text-muted-foreground"
                   }`}>
                     {item.description}
                   </div>
@@ -108,10 +114,10 @@ export default function Sidebar() {
       <div className="pt-4 border-t">
         <div className="space-y-2">
           <div className="flex items-center gap-2 p-2 text-sm text-muted-foreground">
-            <Stethoscope className="h-4 w-4" />
-            <span>Mode Patient</span>
+            <Activity className="h-4 w-4 text-blue-600" />
+            <span>Mode Médecin</span>
           </div>
-          <Button variant="outline" size="sm" className="w-full">
+          <Button variant="outline" size="sm" className="w-full border-blue-200 text-blue-700 hover:bg-blue-50">
             <LogOut className="h-4 w-4 mr-2" />
             Déconnexion
           </Button>

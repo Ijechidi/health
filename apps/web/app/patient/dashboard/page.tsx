@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { Card } from "@repo/ui/components/card";
-import { Button } from "@repo/ui/components/button";
-import { Badge } from "@repo/ui/components/badge";
-import { CalendarDays, FileText, Activity, Users } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui/components/select";
-import { Input } from "@repo/ui/components/input";
+import { 
+  AppointmentModal,
+  DashboardHeader,
+  StatsSection,
+  PatientProfileCard,
+  AppointmentsList,
+  DocumentsList
+} from "../../../components/dashboard";
 
 type PatientProfile = {
   utilisateur: {
@@ -55,6 +57,7 @@ export default function PatientDashboardPage() {
   const [selectedSlotId, setSelectedSlotId] = useState<string>("");
   const [motif, setMotif] = useState("");
   const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedDateObj, setSelectedDateObj] = useState<Date | undefined>(undefined);
 
   // Disponibilités (exemple) — à remplacer par l'API médecin
   const medecins = useMemo(() => ([
@@ -69,22 +72,7 @@ export default function PatientDashboardPage() {
     { id: "s4", medecinId: "m2", date: new Date(Date.now()+86400000).toISOString().slice(0,10), heure: "15:30" },
   ]), []);
 
-  const filteredSlots = useMemo(() => disponibilites
-    .filter(d => !selectedMedecin || d.medecinId === selectedMedecin)
-    .filter(d => !selectedDate || d.date === selectedDate)
-  , [disponibilites, selectedMedecin, selectedDate]);
 
-  const nextDays = useMemo(() => {
-    const days: { key: string; label: string }[] = [];
-    const now = new Date();
-    for (let i = 0; i < 21; i++) {
-      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i);
-      const key = d.toISOString().slice(0,10);
-      const label = d.toLocaleDateString(undefined, { weekday: 'short', day: '2-digit', month: 'short' });
-      days.push({ key, label });
-    }
-    return days;
-  }, []);
 
   const handleConfirmRdv = async () => {
     const slot = disponibilites.find(s => s.id === selectedSlotId);
@@ -195,177 +183,59 @@ export default function PatientDashboardPage() {
   return (
     <main className="min-h-screen bg-design-bg px-4 py-8">
       <div className="max-w-6xl mx-auto space-y-6">
-        <header className="flex items-end justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Tableau de bord patient</h1>
-            <p className="text-foreground/60">Vue d'ensemble de votre profil, rendez-vous et documents</p>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="default" onClick={() => setNewRdvOpen(true)}>Prendre un rendez-vous</Button>
-            {newRdvOpen && (
-              <>
-                <div className="fixed inset-0 bg-black/30 z-40" onClick={() => setNewRdvOpen(false)} />
-                <div className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border rounded-md p-4 w-full max-w-lg shadow-lg">
-                  <h2 className="text-lg font-semibold">Nouveau rendez-vous</h2>
-                  <div className="mt-4 space-y-4">
-                    <div>
-                      <label className="block text-sm mb-1 text-foreground">Médecin</label>
-                      <Select value={selectedMedecin} onValueChange={setSelectedMedecin}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Choisir un médecin" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {medecins.map(m => (
-                            <SelectItem key={m.id} value={m.id}>{m.titre}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="block text-sm mb-1 text-foreground">Date</label>
-                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                        {nextDays.map(d => (
-                          <button
-                            key={d.key}
-                            onClick={() => { setSelectedDate(d.key); setSelectedSlotId(""); }}
-                            className={`border rounded-md px-2 py-2 text-sm hover:bg-muted ${selectedDate===d.key ? 'bg-primary text-primary-foreground' : ''}`}
-                          >
-                            {d.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm mb-1 text-foreground">Disponibilités</label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {filteredSlots.map(s => (
-                          <button
-                            key={s.id}
-                            onClick={() => setSelectedSlotId(s.id)}
-                            className={`border rounded-md px-3 py-2 text-sm text-left hover:bg-muted ${selectedSlotId===s.id ? 'bg-primary text-primary-foreground' : ''}`}
-                          >
-                            <div className="font-medium">{s.date}</div>
-                            <div className="text-foreground/70">{s.heure}</div>
-                          </button>
-                        ))}
-                        {!filteredSlots.length && <p className="col-span-2 text-sm text-foreground/60">Aucune disponibilité</p>}
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm mb-1 text-foreground">Motif</label>
-                      <Input placeholder="Ex: Consultation de suivi" value={motif} onChange={(e)=>setMotif(e.target.value)} />
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button variant="outline" onClick={()=>setNewRdvOpen(false)}>Annuler</Button>
-                      <Button onClick={handleConfirmRdv} disabled={!selectedMedecin || !selectedDate || !selectedSlotId}>Confirmer</Button>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        </header>
+        <DashboardHeader 
+          onNewAppointment={() => setNewRdvOpen(true)}
+          patientName={profile?.utilisateur.prenom ? `${profile.utilisateur.prenom} ${profile.utilisateur.nom}` : profile?.utilisateur.nom}
+        />
 
-        {/* Cartes de statistiques (style shadcn) */}
-        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-foreground/60">Rendez-vous (total)</p>
-              <CalendarDays className="h-4 w-4 text-foreground/60" />
-            </div>
-            <p className="text-2xl font-semibold mt-1">{appointments.length}</p>
-            <p className="text-xs text-foreground/60 mt-1">Période récente</p>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-foreground/60">Prochains confirmés</p>
-              <Activity className="h-4 w-4 text-foreground/60" />
-            </div>
-            <p className="text-2xl font-semibold mt-1">{appointments.filter(a => a.statut === "CONFIRME").length}</p>
-            <p className="text-xs text-foreground/60 mt-1">Cette semaine</p>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-foreground/60">Documents</p>
-              <FileText className="h-4 w-4 text-foreground/60" />
-            </div>
-            <p className="text-2xl font-semibold mt-1">{documents.length}</p>
-            <p className="text-xs text-foreground/60 mt-1">Récemment ajoutés</p>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-foreground/60">Équipe soignante</p>
-              <Users className="h-4 w-4 text-foreground/60" />
-            </div>
-            <p className="text-2xl font-semibold mt-1">2</p>
-            <p className="text-xs text-foreground/60 mt-1">Médecins suivis</p>
-          </Card>
-        </section>
+        <AppointmentModal
+          open={newRdvOpen}
+          onOpenChange={setNewRdvOpen}
+          medecins={medecins}
+          disponibilites={disponibilites}
+          selectedMedecin={selectedMedecin}
+          onMedecinChange={setSelectedMedecin}
+          selectedDate={selectedDate}
+          selectedDateObj={selectedDateObj}
+          onDateSelect={(date) => {
+      setSelectedDateObj(date);
+            setSelectedDate(date ? date.toISOString().slice(0,10) : "");
+      setSelectedSlotId("");
+    }}
+          selectedSlotId={selectedSlotId}
+          onSlotSelect={setSelectedSlotId}
+          motif={motif}
+          onMotifChange={setMotif}
+          onConfirm={handleConfirmRdv}
+        />
+
+        <StatsSection 
+          appointments={appointments}
+          documents={documents}
+          doctorsCount={2}
+        />
 
         {loading && <p className="text-foreground/70">Chargement...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
         {!loading && profile && (
-          <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="p-4 md:col-span-1">
-              <h2 className="text-lg font-semibold mb-3">Profil</h2>
-              <div className="space-y-1 text-sm">
-                <p><span className="text-foreground/60">Nom:</span> {profile.utilisateur.prenom ? `${profile.utilisateur.prenom} ${profile.utilisateur.nom}` : profile.utilisateur.nom}</p>
-                <p><span className="text-foreground/60">Email:</span> {profile.utilisateur.email}</p>
-                {profile.utilisateur.telephone && <p><span className="text-foreground/60">Téléphone:</span> {profile.utilisateur.telephone}</p>}
-                <p><span className="text-foreground/60">Sexe:</span> {profile.patient.sexe}</p>
-                <p><span className="text-foreground/60">Date de naissance:</span> {profile.patient.dateNaissance}</p>
-                {profile.patient.adresse && <p><span className="text-foreground/60">Adresse:</span> {profile.patient.adresse}</p>}
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="secondary">Groupe: {profile.patient.groupeSanguin}</Badge>
-                  {profile.patient.poids != null && <Badge variant="outline">Poids: {profile.patient.poids} kg</Badge>}
-                  {profile.patient.taille != null && <Badge variant="outline">Taille: {profile.patient.taille} m</Badge>}
+          <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-1">
+              <PatientProfileCard profile={profile} />
                 </div>
+            <div className="md:col-span-2">
+              <AppointmentsList 
+                appointments={appointments}
+                onFilterChange={(period) => console.log('Filter changed:', period)}
+                currentFilter="7 jours"
+              />
               </div>
-            </Card>
-
-            <Card className="p-4 md:col-span-2">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold">Prochains rendez-vous</h2>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">7 jours</Button>
-                  <Button variant="outline" size="sm">30 jours</Button>
-                </div>
-              </div>
-              <div className="space-y-2">
-                {appointments.map((rdv) => (
-                  <div key={rdv.id} className="flex items-center justify-between border rounded-md p-3">
-                    <div>
-                      <p className="font-medium">{rdv.medecin.titre}</p>
-                      <p className="text-sm text-foreground/60">{rdv.date} • {rdv.heure}</p>
-                    </div>
-                    <Badge variant={rdv.statut === "CONFIRME" ? "default" : rdv.statut === "ANNULE" ? "destructive" : "secondary"}>{rdv.statut}</Badge>
-                  </div>
-                ))}
-                {!appointments.length && <p className="text-foreground/60">Aucun rendez-vous à venir</p>}
-              </div>
-            </Card>
           </section>
         )}
 
         {!loading && (
           <section>
-            <Card className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold">Documents récents</h2>
-                <Button variant="outline">Voir tous</Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {documents.map((doc) => (
-                  <a key={doc.id} href={doc.url} className="border rounded-md p-3 hover:bg-muted/30 transition">
-                    <p className="font-medium">{doc.titre}</p>
-                    {doc.description && <p className="text-sm text-foreground/60">{doc.description}</p>}
-                    <p className="text-xs text-foreground/50 mt-1">{new Date(doc.dateCreation).toLocaleString()}</p>
-                  </a>
-                ))}
-                {!documents.length && <p className="text-foreground/60">Aucun document</p>}
-              </div>
-            </Card>
+            <DocumentsList documents={documents} />
           </section>
         )}
       </div>
