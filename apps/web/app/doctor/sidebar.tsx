@@ -73,7 +73,7 @@ export default function DoctorSidebar() {
             <Heart className="h-6 w-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="font-bold text-lg text-foreground">HealthApp</h1>
+            <h1 className="font-bold text-lg text-foreground">MedEasy</h1>
             <p className="text-xs text-muted-foreground">Espace Médecin</p>
           </div>
         </div>

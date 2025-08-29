@@ -130,7 +130,7 @@ export default function DoctorSettingsPage() {
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" 
             />
           </div>
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <label className="text-sm font-medium">Messages patients</label>
               <p className="text-sm text-muted-foreground">
@@ -142,7 +142,7 @@ export default function DoctorSettingsPage() {
               aria-label="Activer les notifications pour messages patients"
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" 
             />
-          </div>
+          </div> */}
         </CardContent>
       </Card>
 
@@ -170,7 +170,7 @@ export default function DoctorSettingsPage() {
             <label htmlFor="confirmPassword" className="text-sm font-medium">Confirmer le mot de passe</label>
             <Input id="confirmPassword" type="password" />
           </div>
-          <div className="flex items-center justify-between">
+          {/* <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <label className="text-sm font-medium">Authentification à deux facteurs</label>
               <p className="text-sm text-muted-foreground">
@@ -182,7 +182,7 @@ export default function DoctorSettingsPage() {
               aria-label="Activer l'authentification à deux facteurs"
               className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500" 
             />
-          </div>
+          </div> */}
         </CardContent>
       </Card>
 

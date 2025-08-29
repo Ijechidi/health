@@ -6,7 +6,10 @@ import Header from "@/components/header/Header";
 
 export default function ConditionalHeader() {
   const pathname = usePathname();
-  const hide = pathname?.startsWith("/register") || pathname?.startsWith("/login") || pathname?.startsWith("/patient");
+  const hide = pathname?.startsWith("/register") 
+    || pathname?.startsWith("/login") 
+    || pathname?.startsWith("/patient")
+    || pathname?.startsWith("/doctor");
   if (hide) return null;
   return <Header/>;
 }

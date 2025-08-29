@@ -71,7 +71,7 @@ export default function DoctorHomePage() {
             <Button variant="secondary" className="bg-white text-blue-600 hover:bg-blue-50">
               Voir mon planning
             </Button>
-            <Button variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button variant="outline" className="border-white text-blue-600 hover:bg-white/10">
               Commencer ma journée
             </Button>
           </div>

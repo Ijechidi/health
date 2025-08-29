@@ -30,7 +30,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className = '' }) => {
                     <div className='flex-1 flex w-full border rounded-md  h-full '>
                        
 
-                        <Image src="/hero.jpg" alt="Description de l'image" width={100} height={200}  className="object-cover rounded-lg w-full h-auto" />
+                        {/* <Image src="/hero.jpg" alt="Description de l'image" width={100} height={200}  className="object-cover rounded-lg w-full h-auto" /> */}
                     </div>
 
 

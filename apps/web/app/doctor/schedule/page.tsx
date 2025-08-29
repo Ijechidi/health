@@ -63,8 +63,8 @@ export default function DoctorSchedulePage() {
             <Calendar className="mr-2 h-4 w-4" />
             Aujourd'hui
           </Button>
-          <Button>
-            <Plus className="mr-2 h-4 w-4 bg-blue-600 hover:bg-blue-700" />
+          <Button className=" bg-blue-600 hover:bg-blue-700">
+            <Plus className="mr-2 h-4 w-4" />
             Nouveau RDV
           </Button>
         </div>
