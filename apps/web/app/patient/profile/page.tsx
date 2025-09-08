@@ -73,14 +73,7 @@ export default function PatientProfilePage() {
         <Button className="mt-4">Enregistrer</Button>
       </Card>
 
-      <Card className="p-4">
-        <h2 className="text-lg font-semibold mb-2">Mes documents</h2>
-        <p className="text-sm text-foreground/60 mb-3">Importez et gérez vos documents médicaux.</p>
-        <div className="flex items-center gap-2">
-          <Input type="file" multiple />
-          <Button variant="outline">Importer</Button>
-        </div>
-      </Card>
+    
     </div>
   );
 }

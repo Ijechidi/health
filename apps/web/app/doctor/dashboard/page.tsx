@@ -48,7 +48,6 @@ export default function DoctorDashboardPage() {
   const stats = [
     { label: "Patients aujourd'hui", value: "12", icon: Users, trend: "+2", color: "text-blue-600" },
     { label: "Consultations terminées", value: "8", icon: UserCheck, trend: "+1", color: "text-green-600" },
-    { label: "Temps moyen", value: "15 min", icon: Clock, trend: "-2 min", color: "text-purple-600" },
     { label: "Documents générés", value: "5", icon: FileCheck, trend: "+3", color: "text-orange-600" }
   ];
 
@@ -71,16 +70,13 @@ export default function DoctorDashboardPage() {
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
         <div className="flex items-center space-x-2">
-          <Button variant="outline" className="border-blue-200 text-blue-700 hover:bg-blue-50">
-            <Calendar className="mr-2 h-4 w-4" />
-            Mon Planning
-          </Button>
+          
           
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
@@ -155,7 +151,7 @@ export default function DoctorDashboardPage() {
       </Card>
 
       {/* Actions rapides */}
-      <Card className="border-blue-100">
+      {/* <Card className="border-blue-100">
         <CardHeader>
           <CardTitle>Actions rapides</CardTitle>
           <CardDescription>
@@ -179,7 +175,7 @@ export default function DoctorDashboardPage() {
             </Button>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }

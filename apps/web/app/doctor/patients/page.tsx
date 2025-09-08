@@ -1,13 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
 import { Button } from "@repo/ui/components/button";
-import { Badge } from "@repo/ui/components/badge";
 import { Input } from "@repo/ui/components/input";
-import { Users, Plus, Search, Eye, Edit, Phone, Mail, Calendar } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui/components/select";
+import { Users, Search, Eye, Phone, Mail, Calendar } from "lucide-react";
+import { PatientDetailsModal } from "@/components/doctor/PatientDetailsModal";
 
 export default function DoctorPatientsPage() {
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
   const patients = [
     {
       id: "1",
@@ -51,16 +57,28 @@ export default function DoctorPatientsPage() {
     }
   ];
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "ACTIF":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "INACTIF":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
+  // Statut non utilisé dans le rendu; on ne colore plus par statut
+
+  const filteredPatients = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return patients.filter((p) => {
+      const matchesQuery = !q ||
+        p.name.toLowerCase().includes(q) ||
+        p.email.toLowerCase().includes(q) ||
+        p.phone.toLowerCase().includes(q);
+      return matchesQuery;
+    });
+  }, [patients, query]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredPatients.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const pagedPatients = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredPatients.slice(start, start + pageSize);
+  }, [filteredPatients, currentPage, pageSize]);
+
+  const goPrev = () => setPage((p) => Math.max(1, p - 1));
+  const goNext = () => setPage((p) => Math.min(totalPages, p + 1));
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
@@ -70,29 +88,7 @@ export default function DoctorPatientsPage() {
         
       </div>
 
-      {/* Search and Filters */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Rechercher un patient</CardTitle>
-          <CardDescription>
-            Trouvez rapidement les informations de vos patients
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Rechercher par nom, email ou téléphone..."
-                  className="pl-8"
-                />
-              </div>
-            </div>
-            <Button variant="outline">Filtres</Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Les filtres sont déplacés dans la carte de la liste */}
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-4">
@@ -155,8 +151,34 @@ export default function DoctorPatientsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-2">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Rechercher par nom, email ou téléphone..."
+                  className="pl-8"
+                  value={query}
+                  onChange={(e) => { setQuery(e.target.value); setPage(1); }}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground block mb-1">Par page</label>
+              <Select value={String(pageSize)} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Par page" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <div className="space-y-4">
-            {patients.map((patient) => (
+            {pagedPatients.map((patient) => (
               <div
                 key={patient.id}
                 className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors"
@@ -196,23 +218,32 @@ export default function DoctorPatientsPage() {
                       {patient.lastVisit}
                     </div>
                   </div>
-                  <Badge className={getStatusColor(patient.status)}>
-                    {patient.status}
-                  </Badge>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="sm">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => { setSelectedPatient(patient); setDetailsOpen(true); }}
+                    >
                       <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Edit className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               </div>
             ))}
+            {filteredPatients.length === 0 && (
+              <p className="text-sm text-muted-foreground">Aucun patient ne correspond aux filtres.</p>
+            )}
+            <div className="flex items-center justify-between pt-2">
+              <p className="text-xs text-muted-foreground">Page {currentPage} / {totalPages} • {filteredPatients.length} résultats</p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={goPrev} disabled={currentPage === 1}>Précédent</Button>
+                <Button variant="outline" size="sm" onClick={goNext} disabled={currentPage === totalPages}>Suivant</Button>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
+      <PatientDetailsModal open={detailsOpen} onOpenChange={setDetailsOpen} patient={selectedPatient} />
     </div>
   );
 }

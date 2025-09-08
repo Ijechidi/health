@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ className = '' }) => {
           {/* Actions */}
           <div className="flex items-center space-x-4">
                   <Nav className="text-card" />
-            <Link href="/patient/auth/register">
+            <Link href="/register">
               <Button variant="default" size="sm">
                 S'inscrire
               </Button>

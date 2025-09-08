@@ -1,12 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
 import { Button } from "@repo/ui/components/button";
 import { Badge } from "@repo/ui/components/badge";
 import { Calendar, Plus, Clock, User, MapPin } from "lucide-react";
+import { DoctorNewAppointmentModal } from "@/components/doctor/DoctorNewAppointmentModal";
 
 export default function DoctorSchedulePage() {
+  const [newRdvOpen, setNewRdvOpen] = useState(false);
+  const [creating, setCreating] = useState(false);
   const appointments = [
     {
       id: "1",
@@ -53,6 +56,21 @@ export default function DoctorSchedulePage() {
     }
   };
 
+  const handleCreate = async (payload: {
+    date: string;
+    time: string;
+    duration: string;
+  }) => {
+    try {
+      setCreating(true);
+      // TODO: appeler l'API réelle pour créer la disponibilité côté médecin
+      console.log("Créer RDV (médecin)", payload);
+      setNewRdvOpen(false);
+    } finally {
+      setCreating(false);
+    }
+  };
+
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
       {/* Header */}
@@ -63,7 +81,7 @@ export default function DoctorSchedulePage() {
             <Calendar className="mr-2 h-4 w-4" />
             Aujourd'hui
           </Button>
-          <Button className=" bg-blue-600 hover:bg-blue-700">
+          <Button className=" bg-blue-600 hover:bg-blue-700" onClick={() => setNewRdvOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Nouveau RDV
           </Button>
@@ -148,7 +166,7 @@ export default function DoctorSchedulePage() {
       </Card>
 
       {/* Quick Actions */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Actions rapides</CardTitle>
           <CardDescription>
@@ -157,7 +175,7 @@ export default function DoctorSchedulePage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="outline" className="h-20 flex-col gap-2">
+            <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => setNewRdvOpen(true)}>
               <Plus className="h-6 w-6" />
               <span>Nouveau RDV</span>
             </Button>
@@ -171,7 +189,13 @@ export default function DoctorSchedulePage() {
             </Button>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
+      <DoctorNewAppointmentModal
+        open={newRdvOpen}
+        onOpenChange={setNewRdvOpen}
+        onConfirm={handleCreate}
+        loading={creating}
+      />
     </div>
   );
 }

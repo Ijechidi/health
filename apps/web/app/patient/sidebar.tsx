@@ -47,12 +47,7 @@ const navigationItems = [
     icon: Bell,
     description: "Alertes et messages"
   },
-  {
-    name: "Paramètres",
-    href: "/patient/settings",
-    icon: Settings,
-    description: "Configuration"
-  }
+ 
 ];
 
 export default function Sidebar() {

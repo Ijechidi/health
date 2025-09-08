@@ -220,10 +220,10 @@ export default function PatientDashboardPage() {
 
         {!loading && profile && (
           <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-1">
+            {/* <div className="md:col-span-1">
               <PatientProfileCard profile={profile} />
-                </div>
-            <div className="md:col-span-2">
+                </div> */}
+            <div className="md:col-span-4">
               <AppointmentsList 
                 appointments={appointments}
                 onFilterChange={(period) => console.log('Filter changed:', period)}

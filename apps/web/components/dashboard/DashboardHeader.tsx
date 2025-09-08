@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@repo/ui/components/button";
-import { Calendar, Plus } from "lucide-react";
+import { Calendar, File, Plus } from "lucide-react";
 
 interface DashboardHeaderProps {
   onNewAppointment: () => void;
@@ -11,7 +11,7 @@ export function DashboardHeader({ onNewAppointment, patientName }: DashboardHead
   return (
     <header className="flex items-end justify-between mb-8">
       <div className="space-y-2">
-        <h1 className="text-4xl font-bold text-foreground bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold  bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
           Tableau de bord
         </h1>
         <div className="space-y-1">
@@ -23,8 +23,19 @@ export function DashboardHeader({ onNewAppointment, patientName }: DashboardHead
           </p>
         </div>
       </div>
+
+
       
       <div className="flex gap-3">
+                      <Button title="Voir les documents"
+          variant="outline" 
+          size="lg"
+          className="hidden sm:flex items-center gap-2"
+        >
+          <File className="h-4 w-4" />
+          <span>2</span>
+        </Button>
+        
         <Button 
           variant="outline" 
           size="lg"

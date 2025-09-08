@@ -20,7 +20,7 @@ export default function PatientNotificationPage() {
       id: "n1",
       type: "RENDEZ_VOUS",
       title: "Rendez-vous confirmé",
-      message: "Votre rendez-vous avec Dr. Ndiaye du 2025-09-20 à 14:00 est confirmé.",
+      message: " Dr. Ndiaye du 2025-09-20 à 14:00...",
       date: new Date().toISOString(),
       read: false,
     },
@@ -66,10 +66,10 @@ export default function PatientNotificationPage() {
       <Card className="p-0 overflow-hidden">
         <ul className="divide-y">
           {items.map((n) => (
-            <li key={n.id} className={`p-3 flex items-start gap-3 ${n.read ? 'bg-transparent' : 'bg-muted/30'}`}>
+            <li key={n.id} className={`p-3 border-2 flex items-start gap-3 ${n.read ? 'bg-transparent' : 'bg-muted/30'}`}>
               <div className="mt-0.5">{typeBadge(n.type)}</div>
               <div className="flex-1">
-                <p className="font-medium">{n.title}</p>
+                <p className="font-bold">{n.title}</p>
                 <p className="text-sm text-foreground/70">{n.message}</p>
                 <p className="text-xs text-foreground/50 mt-1">{new Date(n.date).toLocaleString()}</p>
               </div>

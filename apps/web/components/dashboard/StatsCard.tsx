@@ -22,7 +22,7 @@ export function StatsCard({ title, value, subtitle, icon: Icon, trend }: StatsCa
           <p className="text-3xl font-bold text-foreground">{value}</p>
           <div className="flex items-center gap-2">
             <p className="text-xs text-muted-foreground">{subtitle}</p>
-            {trend && (
+            {/* {trend && (
               <span className={`text-xs px-2 py-1 rounded-full ${
                 trend.isPositive 
                   ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' 
@@ -30,7 +30,7 @@ export function StatsCard({ title, value, subtitle, icon: Icon, trend }: StatsCa
               }`}>
                 {trend.isPositive ? '+' : ''}{trend.value}
               </span>
-            )}
+            )} */}
           </div>
         </div>
         <div className="p-3 bg-primary/10 rounded-lg">

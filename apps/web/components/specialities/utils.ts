@@ -28,3 +28,4 @@ export const specialiter: Record<SpecialiterKeys, string> = files.reduce((acc, f
   return acc;
 }, {} as Record<SpecialiterKeys, string>);
 
+

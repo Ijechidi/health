@@ -43,30 +43,12 @@ export function StatsSection({ appointments, documents, doctorsCount = 2 }: Stat
         isPositive: false
       } : undefined
     },
-    {
-      title: "Documents",
-      value: documents.length,
-      subtitle: "Récemment ajoutés",
-      icon: FileText,
-      trend: documents.length > 0 ? {
-        value: "Disponibles",
-        isPositive: true
-      } : undefined
-    },
-    {
-      title: "Équipe soignante",
-      value: doctorsCount,
-      subtitle: "Médecins suivis",
-      icon: Users,
-      trend: doctorsCount > 0 ? {
-        value: "Actifs",
-        isPositive: true
-      } : undefined
-    }
+
+    
   ];
 
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+    <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
       {stats.map((stat, index) => (
         <StatsCard
           key={index}
