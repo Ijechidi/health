@@ -10,7 +10,7 @@ import { DoctorNewAppointmentModal } from "@/components/doctor/DoctorNewAppointm
 export default function DoctorSchedulePage() {
   const [newRdvOpen, setNewRdvOpen] = useState(false);
   const [creating, setCreating] = useState(false);
-  const appointments = [
+  const [appointments, setAppointments] = useState([
     {
       id: "1",
       date: "2024-01-15",
@@ -41,7 +41,21 @@ export default function DoctorSchedulePage() {
       duration: "20 min",
       location: "Cabinet B"
     }
-  ];
+  ] as Array<{ id: string; date: string; time: string; patientName: string; type: string; status: string; duration: string; location: string; }>);
+
+  const updateAppointmentStatus = (id: string, status: string) => {
+    setAppointments(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+  };
+
+  const handleConfirm = async (id: string) => {
+    // TODO: appeler l'API PATCH /rendezvous/:id/status avec { status: 'CONFIRME' }
+    updateAppointmentStatus(id, "CONFIRME");
+  };
+
+  const handleCancel = async (id: string) => {
+    // TODO: appeler l'API PATCH /rendezvous/:id/status avec { status: 'ANNULE' }
+    updateAppointmentStatus(id, "ANNULE");
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -151,13 +165,20 @@ export default function DoctorSchedulePage() {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <Badge className={getStatusColor(appointment.status)}>
                     {appointment.status.replace('_', ' ')}
                   </Badge>
-                  <Button variant="ghost" size="sm">
-                    Modifier
-                  </Button>
+                  {appointment.status !== "CONFIRME" && appointment.status !== "ANNULE" && (
+                    <Button variant="outline" size="sm" onClick={() => handleConfirm(appointment.id)} className="border-green-300 text-green-700 hover:bg-green-50">
+                      Confirmer
+                    </Button>
+                  )}
+                  {appointment.status !== "ANNULE" && (
+                    <Button variant="outline" size="sm" onClick={() => handleCancel(appointment.id)} className="border-red-300 text-red-700 hover:bg-red-50">
+                      Annuler
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}

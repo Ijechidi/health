@@ -47,7 +47,7 @@ export default function DoctorDashboardPage() {
 
   const stats = [
     { label: "Patients aujourd'hui", value: "12", icon: Users, trend: "+2", color: "text-blue-600" },
-    { label: "Consultations terminées", value: "8", icon: UserCheck, trend: "+1", color: "text-green-600" },
+    
     { label: "Documents générés", value: "5", icon: FileCheck, trend: "+3", color: "text-orange-600" }
   ];
 

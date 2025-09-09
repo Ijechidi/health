@@ -58,7 +58,7 @@ export default function DoctorSettingsPage() {
       </Card>
 
       {/* Practice Settings */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5 text-blue-600" />
@@ -88,7 +88,7 @@ export default function DoctorSettingsPage() {
             <Input id="breakTime" type="number" defaultValue="60" />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Notification Settings */}
       <Card>

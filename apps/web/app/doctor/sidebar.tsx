@@ -41,17 +41,18 @@ const navigationItems = [
     icon: Users,
     description: "Base de patients"
   },
-  {
-    name: "Consultations",
-    href: "/doctor/consultations",
-    icon: Stethoscope,
-    description: "Suivi des consultations"
-  },
+  
   {
     name: "Documents",
     href: "/doctor/documents",
     icon: FileText,
     description: "Ordonnances, rapports"
+  },
+  {
+    name: "Recommandations",
+    href: "/doctor/recommendations",
+    icon: Stethoscope,
+    description: "Référer à un médecin"
   },
   {
     name: "Paramètres",

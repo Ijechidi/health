@@ -1,6 +1,4 @@
-
 import React from 'react';
-
 import SearchDoctor from '../SearchDoctor';
 import Image from 'next/image';
 
@@ -15,10 +13,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className = '' }) => {
 
             <div className="flex flex-col p-1 overflow-hidden gap-8">
                 {/* top content */}
-                <div className='flex justify-between  h-[250px] w-full'>
+                <div className='flex justify-between h-[250px] w-full'>
 
-                    <div className="text-primary-foreground  gap-20 max-w-1/3">
-                        <h1 className="text-2xl text-foreground md:text-5xl  font-bold leading-tight ">
+                    <div className="mt-16 text-primary-foreground gap-20 max-w-1/3 pl-8 md:pl-12 lg:pl-16">
+                        <h1 className="text-2xl text-foreground md:text-5xl font-bold leading-tight">
                             Prenez facilement vos <br/>
                             <span>rendez-vous</span> 
 
@@ -26,22 +24,16 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className = '' }) => {
                         </h1>
                     </div>
 
-                        {/* gauche  */}
-                    <div className='flex-1 flex w-full border rounded-md  h-full '>
-                       
-
-                        {/* <Image src="/hero.jpg" alt="Description de l'image" width={100} height={200}  className="object-cover rounded-lg w-full h-auto" /> */}
+                    {/* gauche  */}
+                    <div className='flex-1 flex w-full border rounded-md h-full'>
+                        {/* <Image src="/hero.jpg" alt="Description de l'image" width={100} height={200} className="object-cover rounded-lg w-full h-auto" /> */}
                     </div>
-
-
                 </div>
 
                <div className="flex flex-col md:flex-row gap-2">
-      <SearchDoctor/>
+                    <SearchDoctor/>
                </div>
-
             </div>
-
         </section>
     );
 };

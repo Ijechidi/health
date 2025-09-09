@@ -91,7 +91,7 @@ export default function DoctorPatientsPage() {
       {/* Les filtres sont déplacés dans la carte de la liste */}
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
@@ -99,9 +99,7 @@ export default function DoctorPatientsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">156</div>
-            <p className="text-xs text-muted-foreground">
-              +12 ce mois
-            </p>
+           
           </CardContent>
         </Card>
         <Card>
@@ -111,9 +109,7 @@ export default function DoctorPatientsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">142</div>
-            <p className="text-xs text-muted-foreground">
-              91% du total
-            </p>
+            
           </CardContent>
         </Card>
         <Card>
@@ -123,23 +119,10 @@ export default function DoctorPatientsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
-              +2 cette semaine
-            </p>
+            
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Consultations</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">89</div>
-            <p className="text-xs text-muted-foreground">
-              Ce mois
-            </p>
-          </CardContent>
-        </Card>
+        
       </div>
 
       {/* Patients List */}
