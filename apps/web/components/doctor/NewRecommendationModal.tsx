@@ -55,13 +55,18 @@ export function NewRecommendationModal({ open, onOpenChange, patients, doctors, 
             </Button>
           </div>
 
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-6 space-y-6">
+            {/* Section Patient */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 pb-2 border-b border-blue-100">
+                <Users className="h-4 w-4 text-blue-600" />
+                <h3 className="text-sm font-semibold text-blue-900">Patient</h3>
+              </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Patient</label>
+                <label className="text-sm font-medium text-gray-700">Sélectionner le patient</label>
                 <Select value={patientId} onValueChange={setPatientId}>
                   <SelectTrigger className="border-blue-300 focus-visible:ring-blue-600 focus-visible:border-blue-600">
-                    <SelectValue placeholder="Sélectionner un patient" />
+                    <SelectValue placeholder="Choisir un patient" />
                   </SelectTrigger>
                   <SelectContent>
                     {patients.map(p => (
@@ -70,11 +75,19 @@ export function NewRecommendationModal({ open, onOpenChange, patients, doctors, 
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {/* Section Médecin recommandé */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 pb-2 border-b border-blue-100">
+                <Stethoscope className="h-4 w-4 text-blue-600" />
+                <h3 className="text-sm font-semibold text-blue-900">Médecin recommandé</h3>
+              </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2"><Stethoscope className="h-4 w-4 text-muted-foreground" /> Médecin recommandé</label>
+                <label className="text-sm font-medium text-gray-700">Vers quel médecin orienter</label>
                 <Select value={targetDoctorId} onValueChange={setTargetDoctorId}>
                   <SelectTrigger className="border-blue-300 focus-visible:ring-blue-600 focus-visible:border-blue-600">
-                    <SelectValue placeholder="Sélectionner un médecin" />
+                    <SelectValue placeholder="Choisir un médecin" />
                   </SelectTrigger>
                   <SelectContent>
                     {doctors.map(d => (
@@ -83,9 +96,23 @@ export function NewRecommendationModal({ open, onOpenChange, patients, doctors, 
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {/* Section Date */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 pb-2 border-b border-blue-100">
+                <CalendarIcon className="h-4 w-4 text-blue-600" />
+                <h3 className="text-sm font-semibold text-blue-900">Date de recommandation</h3>
+              </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2"><CalendarIcon className="h-4 w-4 text-muted-foreground" /> Date</label>
-                <Input type="date" value={date} min={new Date().toISOString().slice(0,10)} onChange={(e) => setDate(e.target.value)} className="border-blue-300 focus-visible:ring-blue-600 focus-visible:border-blue-600" />
+                <label className="text-sm font-medium text-gray-700">Quand effectuer cette recommandation</label>
+                <Input 
+                  type="date" 
+                  value={date} 
+                  min={new Date().toISOString().slice(0,10)} 
+                  onChange={(e) => setDate(e.target.value)} 
+                  className="border-blue-300 focus-visible:ring-blue-600 focus-visible:border-blue-600" 
+                />
               </div>
             </div>
             <div className="space-y-2">

@@ -18,7 +18,7 @@ export default function SpecialityCard({
   url
 }: Speciality) {
   return (
-<div className="border border-dashed cursor-pointer transition-all dark:bg-black/50 w-32 h-40 p-2 rounded-md shadow-sm flex flex-col">
+<div className="border border-dashed scale-75 md:scale-100 cursor-pointer transition-all dark:bg-black/50 w-32 h-40 p-2 rounded-md shadow-sm flex flex-col">
   <div className="bg-muted h-32 flex items-center rounded justify-center mb-2">
     {image ? (
       <Image

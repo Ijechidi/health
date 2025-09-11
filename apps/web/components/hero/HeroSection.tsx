@@ -13,10 +13,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className = '' }) => {
 
             <div className="flex flex-col p-1 overflow-hidden gap-8">
                 {/* top content */}
-                <div className='flex justify-between h-[250px] w-full'>
+                <div className='flex justify-between h-[400px] w-full'>
 
                     <div className="mt-16 text-primary-foreground gap-20 max-w-1/3 pl-8 md:pl-12 lg:pl-16">
-                        <h1 className="text-2xl text-foreground md:text-5xl font-bold leading-tight">
+                        <h1 className="text-2xl text-foreground md:text-3xl lg:text-5xl font-bold leading-tight">
                             Prenez facilement vos <br/>
                             <span>rendez-vous</span> 
 
@@ -30,9 +30,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ className = '' }) => {
                     </div>
                 </div>
 
-               <div className="flex flex-col md:flex-row gap-2">
-                    <SearchDoctor/>
-               </div>
+    
             </div>
         </section>
     );

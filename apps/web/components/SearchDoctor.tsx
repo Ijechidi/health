@@ -12,6 +12,7 @@ import {
 } from '@repo/ui/components/select';
 import { specialities } from './specialities/mock';
 import { useSearchStore } from './hooks/useSearchStore';
+import { X } from 'lucide-react';
 
 export default function SearchDoctor() {
   const { location, nom, speciality, setLocation, setNom, setSpeciality, reset } = useSearchStore();
@@ -39,7 +40,7 @@ export default function SearchDoctor() {
             placeholder="Nom de l'hôpital"
             value={nom}
             onChange={(e) => setNom(e.target.value)}
-            className="w-full"
+            className="w-full max-w-32"
           />
         </div>
         
@@ -59,7 +60,7 @@ export default function SearchDoctor() {
         </div>
         
         <Button size="lg" variant="outline" className="self-start" onClick={handleReset}>
-          Reset
+          <X className="h-4 w-4" />
         </Button>
       </div>
     </div>
