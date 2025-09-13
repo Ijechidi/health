@@ -9,7 +9,8 @@ export default function ConditionalHeader() {
   const hide = pathname?.startsWith("/register") 
     || pathname?.startsWith("/login") 
     || pathname?.startsWith("/patient")
-    || pathname?.startsWith("/doctor");
+    || pathname?.startsWith("/doctor")
+    || pathname?.startsWith("/admin");
   if (hide) return null;
   return <Header/>;
 }

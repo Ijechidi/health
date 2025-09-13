@@ -61,12 +61,12 @@ export default function AdminHomePage() {
           <h1 className="text-3xl font-bold text-gray-900">Administration</h1>
           <p className="text-gray-600 mt-2">Gestion globale du système de santé</p>
         </div>
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <Button className="bg-black hover:bg-neutral-800">
             <Plus className="h-4 w-4 mr-2" />
             Nouvelle action
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Stats Cards */}

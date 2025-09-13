@@ -5,17 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Badge } from "@repo/ui/components/badge";
-import { 
-  Building2, 
-  Search, 
-  Plus,
-  Edit,
-  Trash2,
-  MapPin,
-  Phone,
-  Users,
-  Calendar
-} from "lucide-react";
+import { Plus, Search, Building2, MapPin, Phone, Calendar, Edit, Trash2 } from "lucide-react";
+import { DeleteHospitalModal } from "@/components/admin/DeleteHospitalModal";
+import { NewHospitalModal } from "@/components/admin/NewHospitalModal";
 
 interface Hospital {
   id: string;
@@ -31,43 +23,110 @@ interface Hospital {
 
 export default function AdminHospitalsPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [newHospitalModalOpen, setNewHospitalModalOpen] = useState(false);
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+  const [creating, setCreating] = useState(false);
 
-  // Mock data selon le schéma
+  // Mock data selon le schéma - Hôpitaux du Togo
   const hospitals = useMemo(() => ([
     {
       id: 'h1',
-      nom: 'Hôpital Principal',
-      adresse: '123 Avenue de la République, Dakar',
-      description: 'Hôpital de référence principal de la région',
-      contact: '+221 33 123 45 67',
-      localisation: 'Dakar, Sénégal',
+      nom: 'Centre Hospitalier Universitaire (CHU) de Lomé',
+      adresse: 'Boulevard du 13 Janvier, Lomé',
+      description: 'Hôpital de référence principal du Togo',
+      contact: '+228 22 21 20 19',
+      localisation: 'Lomé, Togo',
       medecinsCount: 45,
       patientsCount: 1200,
       dateCreation: '2024-01-01'
     },
     {
       id: 'h2',
-      nom: 'Centre Médical Saint-Louis',
-      adresse: '456 Rue de la Santé, Saint-Louis',
-      description: 'Centre médical spécialisé',
-      contact: '+221 33 234 56 78',
-      localisation: 'Saint-Louis, Sénégal',
+      nom: 'Hôpital Régional de Kara',
+      adresse: 'Avenue du 15 Janvier, Kara',
+      description: 'Hôpital régional du nord du Togo',
+      contact: '+228 26 60 00 00',
+      localisation: 'Kara, Togo',
       medecinsCount: 23,
       patientsCount: 800,
       dateCreation: '2024-01-15'
     },
     {
       id: 'h3',
-      nom: 'Clinique Privée Excellence',
-      adresse: '789 Boulevard de l\'Excellence, Thiès',
-      description: 'Clinique privée de haute qualité',
-      contact: '+221 33 345 67 89',
-      localisation: 'Thiès, Sénégal',
+      nom: 'Centre Médical de Sokodé',
+      adresse: 'Rue de la Santé, Sokodé',
+      description: 'Centre médical de la région centrale',
+      contact: '+228 25 50 00 00',
+      localisation: 'Sokodé, Togo',
       medecinsCount: 18,
       patientsCount: 450,
       dateCreation: '2024-02-01'
+    },
+    {
+      id: 'h4',
+      nom: 'Hôpital de Kpalimé',
+      adresse: 'Boulevard de l\'Indépendance, Kpalimé',
+      description: 'Hôpital de la région des Plateaux',
+      contact: '+228 24 40 00 00',
+      localisation: 'Kpalimé, Togo',
+      medecinsCount: 15,
+      patientsCount: 350,
+      dateCreation: '2024-02-15'
+    },
+    {
+      id: 'h5',
+      nom: 'Centre de Santé d\'Atakpamé',
+      adresse: 'Avenue du Général Gnassingbé, Atakpamé',
+      description: 'Centre de santé de la région des Plateaux',
+      contact: '+228 25 50 00 00',
+      localisation: 'Atakpamé, Togo',
+      medecinsCount: 12,
+      patientsCount: 280,
+      dateCreation: '2024-03-01'
     }
   ]), []);
+
+  const handleDeleteHospital = (hospital: Hospital) => {
+    setSelectedHospital(hospital);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedHospital) {
+      // Mock: Simuler la suppression
+      console.log('Suppression de l\'hôpital:', selectedHospital.id);
+      // En réalité, appeler l'API de suppression
+    }
+  };
+
+  const handleCreateHospital = async (hospitalData: any) => {
+    setCreating(true);
+    try {
+      // Mock: Simuler la création
+      console.log('Création de l\'hôpital:', hospitalData);
+      // En réalité, appeler l'API de création
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulation
+      setNewHospitalModalOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de la création:', error);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  // Mock: Simuler le nombre d'utilisateurs assignés
+  const getAssignedUsersCount = (hospitalId: string) => {
+    // En réalité, faire une requête pour compter les assignations actives
+    const mockCounts: { [key: string]: number } = {
+      'h1': 12, // CHU de Lomé
+      'h2': 0,  // Kara
+      'h3': 5,  // Sokodé
+      'h4': 0,  // Kpalimé
+      'h5': 0   // Atakpamé
+    };
+    return mockCounts[hospitalId] || 0;
+  };
 
   const filteredHospitals = useMemo(() => {
     return hospitals.filter(hospital =>
@@ -85,7 +144,10 @@ export default function AdminHospitalsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Gestion des hôpitaux</h1>
           <p className="text-gray-600 mt-2">Administrer les établissements de santé</p>
         </div>
-        <Button className="bg-black hover:bg-neutral-800">
+        <Button 
+          className="bg-black hover:bg-neutral-800"
+          onClick={() => setNewHospitalModalOpen(true)}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Nouvel hôpital
         </Button>
@@ -100,7 +162,7 @@ export default function AdminHospitalsPage() {
               placeholder="Rechercher un hôpital..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600"
             />
           </div>
         </CardContent>
@@ -128,7 +190,12 @@ export default function AdminHospitalsPage() {
                   <Button variant="ghost" size="sm">
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-red-600 hover:text-red-700"
+                    onClick={() => handleDeleteHospital(hospital)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -149,88 +216,35 @@ export default function AdminHospitalsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-blue-600">
-                    <Users className="h-4 w-4" />
-                    <span className="text-sm font-medium">Médecins</span>
-                  </div>
-                  <p className="text-lg font-bold text-blue-600">{hospital.medecinsCount}</p>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-green-600">
-                    <Users className="h-4 w-4" />
-                    <span className="text-sm font-medium">Patients</span>
-                  </div>
-                  <p className="text-lg font-bold text-green-600">{hospital.patientsCount}</p>
-                </div>
-              </div>
 
               <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t">
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   Créé le {hospital.dateCreation}
                 </span>
-                <Badge variant="outline">Actif</Badge>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total hôpitaux</p>
-                <p className="text-2xl font-bold text-gray-900">{hospitals.length}</p>
-              </div>
-              <Building2 className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Médecins total</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {hospitals.reduce((sum, h) => sum + h.medecinsCount, 0)}
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Patients total</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {hospitals.reduce((sum, h) => sum + h.patientsCount, 0)}
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Moyenne médecin/hôpital</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {Math.round(hospitals.reduce((sum, h) => sum + h.medecinsCount, 0) / hospitals.length)}
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Modals */}
+      {selectedHospital && (
+        <DeleteHospitalModal
+          open={deleteModalOpen}
+          onOpenChange={setDeleteModalOpen}
+          hospital={selectedHospital}
+          assignedUsers={getAssignedUsersCount(selectedHospital.id)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
+
+      <NewHospitalModal
+        open={newHospitalModalOpen}
+        onOpenChange={setNewHospitalModalOpen}
+        onCreate={handleCreateHospital}
+        loading={creating}
+      />
     </div>
   );
 }

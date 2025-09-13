@@ -6,16 +6,15 @@ import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui/components/select";
 import { Badge } from "@repo/ui/components/badge";
+import { UserDetailsModal } from "@/components/admin/UserDetailsModal";
+import { ExportModal } from "@/components/admin/ExportModal";
 import { 
   Users, 
   Search, 
   Filter, 
-  Plus,
   MoreHorizontal,
   UserCheck,
   UserX,
-  Edit,
-  Trash2,
   Shield,
   Stethoscope,
   Heart
@@ -38,6 +37,9 @@ export default function AdminUsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   // Mock data selon le schéma
   const users = useMemo(() => ([
@@ -125,12 +127,17 @@ export default function AdminUsersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Gestion des utilisateurs</h1>
-          <p className="text-gray-600 mt-2">Administrer les comptes utilisateurs</p>
+          <p className="text-gray-600 mt-2">Modérer et gérer les comptes utilisateurs</p>
         </div>
-        <Button className="bg-black hover:bg-neutral-800">
-          <Plus className="h-4 w-4 mr-2" />
-          Nouvel utilisateur
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline"
+            onClick={() => setExportModalOpen(true)}
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Exporter la liste
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -151,14 +158,14 @@ export default function AdminUsersPage() {
                   placeholder="Nom, email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600"
                 />
               </div>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Rôle</label>
               <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600">
                   <SelectValue placeholder="Tous les rôles" />
                 </SelectTrigger>
                 <SelectContent>
@@ -172,7 +179,7 @@ export default function AdminUsersPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Statut</label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600">
                   <SelectValue placeholder="Tous les statuts" />
                 </SelectTrigger>
                 <SelectContent>
@@ -182,14 +189,14 @@ export default function AdminUsersPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <label className="text-sm font-medium">Actions</label>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" className="flex-1">
                   Réinitialiser
                 </Button>
               </div>
-            </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>
@@ -202,7 +209,7 @@ export default function AdminUsersPage() {
             Liste des utilisateurs ({filteredUsers.length})
           </CardTitle>
           <CardDescription>
-            Gérer les comptes et permissions des utilisateurs
+            Modérer les comptes et gérer les statuts des utilisateurs
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -236,16 +243,26 @@ export default function AdminUsersPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className={user.status === 'actif' ? 'text-red-600 hover:text-red-700' : 'text-green-600 hover:text-green-700'}
+                    title={user.status === 'actif' ? 'Désactiver le compte' : 'Activer le compte'}
+                  >
                     {user.status === 'actif' ? <UserX className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
+                    <span className="ml-1 text-sm">
+                      {user.status === 'actif' ? 'Désactiver' : 'Activer'}
+                    </span>
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    title="Voir les informations détaillées"
+                    onClick={() => {
+                      setSelectedUser(user);
+                      setModalOpen(true);
+                    }}
+                  >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </div>
@@ -254,6 +271,23 @@ export default function AdminUsersPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* User Details Modal */}
+      {selectedUser && (
+        <UserDetailsModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          user={selectedUser}
+        />
+      )}
+
+      {/* Export Modal */}
+      <ExportModal
+        open={exportModalOpen}
+        onOpenChange={setExportModalOpen}
+        users={users}
+        filteredUsers={filteredUsers}
+      />
     </div>
   );
 }

@@ -199,14 +199,14 @@ export default function AdminAssignmentsPage() {
                   placeholder="Utilisateur, hôpital..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600"
                 />
               </div>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Rôle</label>
               <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600">
                   <SelectValue placeholder="Tous les rôles" />
                 </SelectTrigger>
                 <SelectContent>
@@ -220,7 +220,7 @@ export default function AdminAssignmentsPage() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Statut</label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600">
                   <SelectValue placeholder="Tous les statuts" />
                 </SelectTrigger>
                 <SelectContent>

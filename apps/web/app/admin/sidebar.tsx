@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@repo/ui/components/button";
 import { 
-  Home, 
   Users, 
   Building2, 
   Stethoscope,
@@ -18,16 +17,10 @@ import {
 
 const navigationItems = [
   {
-    name: "Accueil",
-    href: "/admin",
-    icon: Home,
-    description: "Tableau de bord"
-  },
-  {
     name: "Dashboard",
-    href: "/admin/dashboard",
+    href: "/admin",
     icon: BarChart3,
-    description: "Statistiques générales"
+    description: "Tableau de bord"
   },
   {
     name: "Utilisateurs",

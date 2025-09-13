@@ -110,7 +110,7 @@ export default function AdminSpecialtiesPage() {
               placeholder="Rechercher une spécialité..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600"
             />
           </div>
         </CardContent>
