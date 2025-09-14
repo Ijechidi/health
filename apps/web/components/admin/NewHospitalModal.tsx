@@ -185,3 +185,4 @@ export function NewHospitalModal({ open, onOpenChange, onCreate, loading = false
 }
 
 
+

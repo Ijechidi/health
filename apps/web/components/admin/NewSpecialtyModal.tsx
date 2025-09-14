@@ -127,3 +127,4 @@ export function NewSpecialtyModal({ open, onOpenChange, onCreate, loading = fals
   );
 }
 
+

@@ -19,6 +19,9 @@ import {
   Stethoscope,
   Heart
 } from "lucide-react";
+import { NewAssignmentModal } from "@/components/admin/NewAssignmentModal";
+import { EditAssignmentModal } from "@/components/admin/EditAssignmentModal";
+import { DeleteAssignmentModal } from "@/components/admin/DeleteAssignmentModal";
 
 interface Assignment {
   id: string;
@@ -43,6 +46,13 @@ export default function AdminAssignmentsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [newAssignmentModalOpen, setNewAssignmentModalOpen] = useState(false);
+  const [editAssignmentModalOpen, setEditAssignmentModalOpen] = useState(false);
+  const [deleteAssignmentModalOpen, setDeleteAssignmentModalOpen] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   // Mock data selon le schéma UtilisateurHopital
   const assignments = useMemo(() => ([
@@ -167,6 +177,64 @@ export default function AdminAssignmentsPage() {
     return 'bg-gray-200 text-gray-800 border-gray-300';
   };
 
+  // Handlers pour les modals
+  const handleCreateAssignment = async (assignmentData: any) => {
+    setCreating(true);
+    try {
+      // Mock: Simuler la création
+      console.log('Création de l\'assignation:', assignmentData);
+      // En réalité, appeler l'API de création
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulation
+      setNewAssignmentModalOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de la création:', error);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleEditAssignment = (assignment: Assignment) => {
+    setSelectedAssignment(assignment);
+    setEditAssignmentModalOpen(true);
+  };
+
+  const handleSaveAssignment = async (assignmentData: any) => {
+    setSaving(true);
+    try {
+      // Mock: Simuler la sauvegarde
+      console.log('Sauvegarde de l\'assignation:', assignmentData);
+      // En réalité, appeler l'API de mise à jour
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulation
+      setEditAssignmentModalOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteAssignment = (assignment: Assignment) => {
+    setSelectedAssignment(assignment);
+    setDeleteAssignmentModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedAssignment) return;
+    
+    setDeleting(true);
+    try {
+      // Mock: Simuler la suppression
+      console.log('Suppression de l\'assignation:', selectedAssignment.id);
+      // En réalité, appeler l'API de suppression
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulation
+      setDeleteAssignmentModalOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
       {/* Header */}
@@ -175,7 +243,10 @@ export default function AdminAssignmentsPage() {
           <h1 className="text-3xl font-bold text-gray-900">Gestion des assignations</h1>
           <p className="text-gray-600 mt-2">Attribuer les rôles utilisateur-hôpital</p>
         </div>
-        <Button className="bg-black hover:bg-neutral-800">
+        <Button 
+          className="bg-black hover:bg-neutral-800"
+          onClick={() => setNewAssignmentModalOpen(true)}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Nouvelle assignation
         </Button>
@@ -296,10 +367,19 @@ export default function AdminAssignmentsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => handleEditAssignment(assignment)}
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-red-600 hover:text-red-700"
+                    onClick={() => handleDeleteAssignment(assignment)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -309,59 +389,33 @@ export default function AdminAssignmentsPage() {
         </CardContent>
       </Card>
 
-      {/* Summary Stats */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total assignations</p>
-                <p className="text-2xl font-bold text-gray-900">{assignments.length}</p>
-              </div>
-              <UserCheck className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Assignations actives</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {assignments.filter(a => a.status === 'actif').length}
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Médecins assignés</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {assignments.filter(a => a.role === 'medecin' && a.status === 'actif').length}
-                </p>
-              </div>
-              <Stethoscope className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Patients assignés</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {assignments.filter(a => a.role === 'patient' && a.status === 'actif').length}
-                </p>
-              </div>
-              <Heart className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div> */}
+      {/* Modals */}
+      <NewAssignmentModal
+        open={newAssignmentModalOpen}
+        onOpenChange={setNewAssignmentModalOpen}
+        onCreate={handleCreateAssignment}
+        loading={creating}
+      />
+
+      {selectedAssignment && (
+        <EditAssignmentModal
+          open={editAssignmentModalOpen}
+          onOpenChange={setEditAssignmentModalOpen}
+          assignment={selectedAssignment}
+          onSave={handleSaveAssignment}
+          loading={saving}
+        />
+      )}
+
+      {selectedAssignment && (
+        <DeleteAssignmentModal
+          open={deleteAssignmentModalOpen}
+          onOpenChange={setDeleteAssignmentModalOpen}
+          assignment={selectedAssignment}
+          onConfirm={handleConfirmDelete}
+          loading={deleting}
+        />
+      )}
     </div>
   );
 }

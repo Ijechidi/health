@@ -131,3 +131,4 @@ export function EditSpecialtyModal({ open, onOpenChange, specialty, onSave, load
   );
 }
 
+
