@@ -15,18 +15,25 @@ import {
   Calendar,
   Activity
 } from "lucide-react";
+import { DeleteSpecialtyModal } from "@/components/admin/DeleteSpecialtyModal";
+import { NewSpecialtyModal } from "@/components/admin/NewSpecialtyModal";
+import { EditSpecialtyModal } from "@/components/admin/EditSpecialtyModal";
 
 interface Specialty {
   id: string;
   nom: string;
   description?: string;
-  medecinsCount: number;
-  patientsCount: number;
   dateCreation: string;
 }
 
 export default function AdminSpecialtiesPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [newSpecialtyModalOpen, setNewSpecialtyModalOpen] = useState(false);
+  const [editSpecialtyModalOpen, setEditSpecialtyModalOpen] = useState(false);
+  const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Mock data selon le schéma
   const specialties = useMemo(() => ([
@@ -34,51 +41,101 @@ export default function AdminSpecialtiesPage() {
       id: 's1',
       nom: 'Cardiologie',
       description: 'Spécialité médicale qui traite les maladies du cœur et des vaisseaux sanguins',
-      medecinsCount: 12,
-      patientsCount: 450,
       dateCreation: '2024-01-01'
     },
     {
       id: 's2',
       nom: 'Dermatologie',
       description: 'Spécialité médicale qui traite les maladies de la peau, des cheveux et des ongles',
-      medecinsCount: 8,
-      patientsCount: 320,
       dateCreation: '2024-01-05'
     },
     {
       id: 's3',
       nom: 'Pédiatrie',
       description: 'Spécialité médicale qui traite les enfants de la naissance à l\'adolescence',
-      medecinsCount: 15,
-      patientsCount: 680,
       dateCreation: '2024-01-10'
     },
     {
       id: 's4',
       nom: 'Gynécologie',
       description: 'Spécialité médicale qui traite les maladies de l\'appareil génital féminin',
-      medecinsCount: 6,
-      patientsCount: 280,
       dateCreation: '2024-01-15'
     },
     {
       id: 's5',
       nom: 'Neurologie',
       description: 'Spécialité médicale qui traite les maladies du système nerveux',
-      medecinsCount: 4,
-      patientsCount: 150,
       dateCreation: '2024-01-20'
     },
     {
       id: 's6',
       nom: 'Orthopédie',
       description: 'Spécialité chirurgicale qui traite les maladies des os et des articulations',
-      medecinsCount: 7,
-      patientsCount: 220,
       dateCreation: '2024-01-25'
     }
   ]), []);
+
+  const handleDeleteSpecialty = (specialty: Specialty) => {
+    setSelectedSpecialty(specialty);
+    setDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedSpecialty) {
+      // Mock: Simuler la suppression
+      console.log('Suppression de la spécialité:', selectedSpecialty.id);
+      // En réalité, appeler l'API de suppression
+    }
+  };
+
+  const handleCreateSpecialty = async (specialtyData: any) => {
+    setCreating(true);
+    try {
+      // Mock: Simuler la création
+      console.log('Création de la spécialité:', specialtyData);
+      // En réalité, appeler l'API de création
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulation
+      setNewSpecialtyModalOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de la création:', error);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const handleEditSpecialty = (specialty: Specialty) => {
+    setSelectedSpecialty(specialty);
+    setEditSpecialtyModalOpen(true);
+  };
+
+  const handleSaveSpecialty = async (specialtyData: any) => {
+    setSaving(true);
+    try {
+      // Mock: Simuler la sauvegarde
+      console.log('Sauvegarde de la spécialité:', specialtyData);
+      // En réalité, appeler l'API de mise à jour
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulation
+      setEditSpecialtyModalOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Mock: Simuler le nombre de médecins utilisant cette spécialité
+  const getAssignedUsersCount = (specialtyId: string) => {
+    // En réalité, faire une requête pour compter les médecins avec cette spécialité
+    const mockCounts: { [key: string]: number } = {
+      's1': 12, // Cardiologie
+      's2': 8,  // Dermatologie
+      's3': 15, // Pédiatrie
+      's4': 6,  // Gynécologie
+      's5': 4,  // Neurologie
+      's6': 7   // Orthopédie
+    };
+    return mockCounts[specialtyId] || 0;
+  };
 
   const filteredSpecialties = useMemo(() => {
     return specialties.filter(specialty =>
@@ -95,7 +152,10 @@ export default function AdminSpecialtiesPage() {
           <h1 className="text-3xl font-bold text-gray-900">Gestion des spécialités</h1>
           <p className="text-gray-600 mt-2">Administrer les spécialités médicales</p>
         </div>
-        <Button className="bg-black hover:bg-neutral-800">
+        <Button 
+          className="bg-black hover:bg-neutral-800"
+          onClick={() => setNewSpecialtyModalOpen(true)}
+        >
           <Plus className="h-4 w-4 mr-2" />
           Nouvelle spécialité
         </Button>
@@ -134,23 +194,32 @@ export default function AdminSpecialtiesPage() {
                   </div>
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => handleEditSpecialty(specialty)}
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-red-600 hover:text-red-700"
+                    onClick={() => handleDeleteSpecialty(specialty)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4">
                 <div className="text-center p-3 bg-blue-50 rounded-lg">
                   <div className="flex items-center justify-center gap-1 text-blue-600 mb-1">
                     <Users className="h-4 w-4" />
                     <span className="text-sm font-medium">Médecins</span>
                   </div>
-                  <p className="text-xl font-bold text-blue-600">{specialty.medecinsCount}</p>
+              
                 </div>
                 <div className="text-center p-3 bg-green-50 rounded-lg">
                   <div className="flex items-center justify-center gap-1 text-green-600 mb-1">
@@ -159,14 +228,14 @@ export default function AdminSpecialtiesPage() {
                   </div>
                   <p className="text-xl font-bold text-green-600">{specialty.patientsCount}</p>
                 </div>
-              </div>
+              </div> */}
 
               <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t">
                 <span className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   Créé le {specialty.dateCreation}
                 </span>
-                <Badge variant="outline">Actif</Badge>
+                {/* <Badge variant="outline">Actif</Badge> */}
               </div>
             </CardContent>
           </Card>
@@ -174,7 +243,7 @@ export default function AdminSpecialtiesPage() {
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -226,6 +295,34 @@ export default function AdminSpecialtiesPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modals */}
+      {selectedSpecialty && (
+        <DeleteSpecialtyModal
+          open={deleteModalOpen}
+          onOpenChange={setDeleteModalOpen}
+          specialty={selectedSpecialty}
+          assignedUsers={getAssignedUsersCount(selectedSpecialty.id)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
+
+      <NewSpecialtyModal
+        open={newSpecialtyModalOpen}
+        onOpenChange={setNewSpecialtyModalOpen}
+        onCreate={handleCreateSpecialty}
+        loading={creating}
+      />
+
+      {selectedSpecialty && (
+        <EditSpecialtyModal
+          open={editSpecialtyModalOpen}
+          onOpenChange={setEditSpecialtyModalOpen}
+          specialty={selectedSpecialty}
+          onSave={handleSaveSpecialty}
+          loading={saving}
+        />
+      )}
     </div>
   );
 }

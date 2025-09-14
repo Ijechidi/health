@@ -8,6 +8,7 @@ import { Badge } from "@repo/ui/components/badge";
 import { Plus, Search, Building2, MapPin, Phone, Calendar, Edit, Trash2 } from "lucide-react";
 import { DeleteHospitalModal } from "@/components/admin/DeleteHospitalModal";
 import { NewHospitalModal } from "@/components/admin/NewHospitalModal";
+import { EditHospitalModal } from "@/components/admin/EditHospitalModal";
 
 interface Hospital {
   id: string;
@@ -25,8 +26,10 @@ export default function AdminHospitalsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [newHospitalModalOpen, setNewHospitalModalOpen] = useState(false);
+  const [editHospitalModalOpen, setEditHospitalModalOpen] = useState(false);
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
   const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Mock data selon le schéma - Hôpitaux du Togo
   const hospitals = useMemo(() => ([
@@ -115,6 +118,26 @@ export default function AdminHospitalsPage() {
     }
   };
 
+  const handleEditHospital = (hospital: Hospital) => {
+    setSelectedHospital(hospital);
+    setEditHospitalModalOpen(true);
+  };
+
+  const handleSaveHospital = async (hospitalData: any) => {
+    setSaving(true);
+    try {
+      // Mock: Simuler la sauvegarde
+      console.log('Sauvegarde de l\'hôpital:', hospitalData);
+      // En réalité, appeler l'API de mise à jour
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulation
+      setEditHospitalModalOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // Mock: Simuler le nombre d'utilisateurs assignés
   const getAssignedUsersCount = (hospitalId: string) => {
     // En réalité, faire une requête pour compter les assignations actives
@@ -187,7 +210,11 @@ export default function AdminHospitalsPage() {
                   </div>
                 </div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => handleEditHospital(hospital)}
+                  >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button 
@@ -245,6 +272,16 @@ export default function AdminHospitalsPage() {
         onCreate={handleCreateHospital}
         loading={creating}
       />
+
+      {selectedHospital && (
+        <EditHospitalModal
+          open={editHospitalModalOpen}
+          onOpenChange={setEditHospitalModalOpen}
+          hospital={selectedHospital}
+          onSave={handleSaveHospital}
+          loading={saving}
+        />
+      )}
     </div>
   );
 }

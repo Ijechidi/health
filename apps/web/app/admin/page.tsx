@@ -10,7 +10,6 @@ import {
   Calendar,
   TrendingUp,
   AlertCircle,
-  Plus,
   ArrowRight
 } from "lucide-react";
 
@@ -47,10 +46,10 @@ export default function AdminHomePage() {
   ];
 
   const stats = [
-    { label: "Utilisateurs totaux", value: "1,247", change: "+12%", trend: "up" },
-    { label: "Médecins actifs", value: "89", change: "+5%", trend: "up" },
-    { label: "Patients", value: "1,158", change: "+8%", trend: "up" },
-    { label: "Hôpitaux", value: "12", change: "0%", trend: "stable" }
+    { label: "Utilisateurs totaux", value: "200" },
+    { label: "Médecins ", value: "100" },
+    { label: "Patients", value: "100" },
+    { label: "Hôpitaux", value: "12" }
   ];
 
   return (
@@ -79,13 +78,13 @@ export default function AdminHomePage() {
                   <p className="text-sm font-medium text-gray-600">{stat.label}</p>
                   <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                 </div>
-                <div className={`flex items-center gap-1 text-sm ${
+                {/* <div className={`flex items-center gap-1 text-sm ${
                   stat.trend === 'up' ? 'text-green-600' : 
                   stat.trend === 'down' ? 'text-red-600' : 'text-gray-600'
                 }`}>
                   <TrendingUp className="h-4 w-4" />
                   {stat.change}
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>

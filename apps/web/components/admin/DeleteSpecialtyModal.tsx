@@ -6,27 +6,24 @@ import { Input } from "@repo/ui/components/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
 import { 
   X, 
-  Building2, 
+  Stethoscope, 
   AlertTriangle,
-  Users,
-  MapPin,
-  Phone
+  Users
 } from "lucide-react";
 
-interface DeleteHospitalModalProps {
+interface DeleteSpecialtyModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  hospital: {
+  specialty: {
     id: string;
     nom: string;
-    adresse: string;
-    localisation?: string;
+    description?: string;
   };
   assignedUsers: number;
   onConfirm: () => void;
 }
 
-export function DeleteHospitalModal({ open, onOpenChange, hospital, assignedUsers, onConfirm }: DeleteHospitalModalProps) {
+export function DeleteSpecialtyModal({ open, onOpenChange, specialty, assignedUsers, onConfirm }: DeleteSpecialtyModalProps) {
   if (!open) return null;
 
   const canDelete = assignedUsers === 0;
@@ -41,16 +38,16 @@ export function DeleteHospitalModal({ open, onOpenChange, hospital, assignedUser
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${canDelete ? 'bg-red-100' : 'bg-orange-100'}`}>
                 {canDelete ? (
-                  <Building2 className="h-6 w-6 text-red-600" />
+                  <Stethoscope className="h-6 w-6 text-red-600" />
                 ) : (
                   <AlertTriangle className="h-6 w-6 text-orange-600" />
                 )}
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {canDelete ? 'Supprimer l\'hôpital' : 'Suppression impossible'}
+                  {canDelete ? 'Supprimer la spécialité' : 'Suppression impossible'}
                 </h2>
-                <p className="text-sm text-gray-500">{hospital.nom}</p>
+                <p className="text-sm text-gray-500">{specialty.nom}</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8">
@@ -63,13 +60,12 @@ export function DeleteHospitalModal({ open, onOpenChange, hospital, assignedUser
             {canDelete ? (
               <div className="space-y-3">
                 <p className="text-gray-700">
-                  Êtes-vous sûr de vouloir supprimer cet hôpital ?
+                  Êtes-vous sûr de vouloir supprimer cette spécialité ?
                 </p>
                 <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-sm font-medium text-gray-900">{hospital.nom}</p>
-                  <p className="text-sm text-gray-600">{hospital.adresse}</p>
-                  {hospital.localisation && (
-                    <p className="text-sm text-gray-600">{hospital.localisation}</p>
+                  <p className="text-sm font-medium text-gray-900">{specialty.nom}</p>
+                  {specialty.description && (
+                    <p className="text-sm text-gray-600">{specialty.description}</p>
                   )}
                 </div>
                 <p className="text-sm text-gray-600">
@@ -83,17 +79,16 @@ export function DeleteHospitalModal({ open, onOpenChange, hospital, assignedUser
                   <p className="font-medium">Suppression bloquée</p>
                 </div>
                 <p className="text-gray-700">
-                  Cet hôpital ne peut pas être supprimé car <strong>{assignedUsers} utilisateur(s)</strong> y sont assignés.
+                  Cette spécialité ne peut pas être supprimée car <strong>{assignedUsers} médecin(s)</strong> l'utilisent.
                 </p>
                 <div className="bg-orange-50 p-3 rounded-lg">
-                  <p className="text-sm font-medium text-orange-900">{hospital.nom}</p>
-                  <p className="text-sm text-orange-700">{hospital.adresse}</p>
-                  {hospital.localisation && (
-                    <p className="text-sm text-orange-700">{hospital.localisation}</p>
+                  <p className="text-sm font-medium text-orange-900">{specialty.nom}</p>
+                  {specialty.description && (
+                    <p className="text-sm text-orange-700">{specialty.description}</p>
                   )}
                 </div>
                 <p className="text-sm text-gray-600">
-                  Pour supprimer cet hôpital, vous devez d'abord réassigner ou désactiver tous les utilisateurs qui y sont liés.
+                  Pour supprimer cette spécialité, vous devez d'abord réassigner ou désactiver tous les médecins qui l'utilisent.
                 </p>
               </div>
             )}
@@ -121,3 +116,4 @@ export function DeleteHospitalModal({ open, onOpenChange, hospital, assignedUser
     </>
   );
 }
+

@@ -9,13 +9,22 @@ import {
   Building2, 
   MapPin,
   Phone,
-  Plus
+  Save
 } from "lucide-react";
 
-interface NewHospitalModalProps {
+interface EditHospitalModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreate: (hospital: {
+  hospital: {
+    id: string;
+    nom: string;
+    adresse: string;
+    description?: string;
+    contact: string;
+    localisation?: string;
+  };
+  onSave: (hospital: {
+    id: string;
     nom: string;
     adresse: string;
     description?: string;
@@ -25,30 +34,24 @@ interface NewHospitalModalProps {
   loading?: boolean;
 }
 
-export function NewHospitalModal({ open, onOpenChange, onCreate, loading = false }: NewHospitalModalProps) {
-  const [nom, setNom] = useState("");
-  const [adresse, setAdresse] = useState("");
-  const [description, setDescription] = useState("");
-  const [contact, setContact] = useState("");
-  const [localisation, setLocalisation] = useState("");
+export function EditHospitalModal({ open, onOpenChange, hospital, onSave, loading = false }: EditHospitalModalProps) {
+  const [nom, setNom] = useState(hospital.nom);
+  const [adresse, setAdresse] = useState(hospital.adresse);
+  const [description, setDescription] = useState(hospital.description || "");
+  const [contact, setContact] = useState(hospital.contact);
+  const [localisation, setLocalisation] = useState(hospital.localisation || "");
 
-  const canCreate = nom && adresse && contact;
+  const canSave = nom && adresse && contact;
 
-  const handleCreate = () => {
-    onCreate({
+  const handleSave = () => {
+    onSave({
+      ...hospital,
       nom,
       adresse,
       description: description || undefined,
       contact,
       localisation: localisation || undefined
     });
-    
-    // Reset form
-    setNom("");
-    setAdresse("");
-    setDescription("");
-    setContact("");
-    setLocalisation("");
   };
 
   if (!open) return null;
@@ -65,8 +68,8 @@ export function NewHospitalModal({ open, onOpenChange, onCreate, loading = false
                 <Building2 className="h-6 w-6 text-gray-600" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Nouvel hôpital</h2>
-                <p className="text-sm text-gray-500">Ajouter un établissement de santé</p>
+                <h2 className="text-xl font-semibold text-gray-900">Modifier l'hôpital</h2>
+                <p className="text-sm text-gray-500">Éditer les informations de l'établissement</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8">
@@ -146,23 +149,6 @@ export function NewHospitalModal({ open, onOpenChange, onCreate, loading = false
                 </div>
               </CardContent>
             </Card>
-
-            {/* Aperçu */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Aperçu</CardTitle>
-                <CardDescription>Vérifiez les informations avant création</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                  <p className="font-medium text-gray-900">{nom || "Nom de l'hôpital"}</p>
-                  <p className="text-sm text-gray-600">{adresse || "Adresse"}</p>
-                  {localisation && <p className="text-sm text-gray-600">{localisation}</p>}
-                  <p className="text-sm text-gray-600">{contact || "Contact"}</p>
-                  {description && <p className="text-sm text-gray-600">{description}</p>}
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Footer */}
@@ -172,10 +158,11 @@ export function NewHospitalModal({ open, onOpenChange, onCreate, loading = false
             </Button>
             <Button 
               className="bg-black hover:bg-neutral-800"
-              disabled={!canCreate || loading}
-              onClick={handleCreate}
+              disabled={!canSave || loading}
+              onClick={handleSave}
             >
-              {loading ? "Création..." : "Créer l'hôpital"}
+              <Save className="h-4 w-4 mr-2" />
+              {loading ? "Sauvegarde..." : "Sauvegarder"}
             </Button>
           </div>
         </div>
@@ -183,5 +170,4 @@ export function NewHospitalModal({ open, onOpenChange, onCreate, loading = false
     </>
   );
 }
-
 
