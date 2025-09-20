@@ -31,7 +31,7 @@ export default function AdminSettingsPage() {
     confirmPassword: ""
   });
 
-  // État pour les paramètres de notifications
+  // État pour les paramètres de notifications jjjj
   const [notificationSettings, setNotificationSettings] = useState({
     emailNotifications: true,
     smsNotifications: false,
