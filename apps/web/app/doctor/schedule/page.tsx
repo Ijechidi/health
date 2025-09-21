@@ -6,6 +6,7 @@ import { Button } from "@repo/ui/components/button";
 import { Badge } from "@repo/ui/components/badge";
 import { Calendar, Plus, Clock, User, MapPin } from "lucide-react";
 import { DoctorNewAppointmentModal } from "@/components/doctor/DoctorNewAppointmentModal";
+import Link from 'next/link';
 
 export default function DoctorSchedulePage() {
   const [newRdvOpen, setNewRdvOpen] = useState(false);
@@ -101,6 +102,9 @@ export default function DoctorSchedulePage() {
           </Button>
         </div>
       </div>
+        <Link href="/doctor/planning" className="text-blue-500 font-bold hover:underline">
+          Planning
+        </Link>
 
       {/* Calendar Overview */}
       <Card>
