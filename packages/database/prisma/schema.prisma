@@ -105,6 +105,7 @@ model RendezVous {
 model Hopital {
   id                  String               @id @default(uuid())
   nom                 String
+  slug                String? @unique
   adresse             String
   description         String?
   contact             String
