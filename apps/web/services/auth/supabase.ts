@@ -1,11 +1,11 @@
 // src/services/auth/supabase.ts
 
 import { createClient } from "@/utils/supabase/server";
-import {prisma} from "@/lib/prisma";
+
 import { redirect } from "next/navigation";
 
-import { Functions, UserInfo } from "@/types/user";
-import { Role } from "@prisma/client";
+import {  UserInfo } from "@/types/user";
+
 import { getUserInfo } from "../users/userInfo";
 
 
@@ -18,28 +18,6 @@ interface SignUpParams {
   info?: Partial<Pick<UserInfo, "name" | "phone" | "avatar_url">>;
 }
 
-
-
-export async function signUpResponsable(params: SignUpParams) {
-  const { email, password, info } = params;
-
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    
-    options: {
-      emailRedirectTo: `${baseUrl}/auth/callback`,
-      data: {
-        ...info,
-        role: Role.ADMIN,
-        function: Functions.SUPER_ADMIN,
-      },
-    },
-  });
-
-  return { data, error };
-}
 
 
 

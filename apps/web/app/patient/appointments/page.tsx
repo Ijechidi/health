@@ -71,19 +71,6 @@ export default function PatientAppointmentsPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header avec bouton retour */}
-      <div className="bg-green-50 border-b border-green-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-            className="mb-4 text-green-700 hover:text-green-800 hover:bg-green-100"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour
-          </Button>
-        </div>
-      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Card className="p-4">
@@ -92,7 +79,7 @@ export default function PatientAppointmentsPage() {
             <Button 
               variant="default" 
               onClick={() => setNewRdvOpen(true)}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-800 hover:bg-green-700"
             >
               Nouveau rendez-vous
             </Button>

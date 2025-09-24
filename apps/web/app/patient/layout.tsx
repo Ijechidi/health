@@ -43,7 +43,7 @@ export default function PatientLayout({
 
         {/* Espace contenu avec marge gauche quand sidebar visible */}
         <section className={`min-h-[60vh] space-y-4 md:pl-[280px] transition-all`}>
-          <div className="bg-background border rounded-md px-4 py-3 flex items-center gap-3">
+          {/* <div className="bg-background border rounded-md px-4 py-3 flex items-center gap-3">
             <Button variant="outline" size="icon" onClick={() => setSidebarOpen(v => !v)} aria-label="Basculer la sidebar" className="md:hidden">
               <Menu className="h-4 w-4" />
             </Button>
@@ -55,7 +55,7 @@ export default function PatientLayout({
                 <Bell className="h-4 w-4" />
               </Button>
             </div>
-          </div>
+          </div> */}
           {children}
         </section>
       </div>

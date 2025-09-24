@@ -123,9 +123,9 @@ export function DoctorCard({
       
       <Button
         onClick={() => onBookAppointment(doctor.id)}
-        className="w-full bg-green-600 hover:bg-green-700"
+        className="w-full bg-green-800 hover:bg-green-700 rounded-lg"
       >
-        <Calendar className="h-4 w-4 mr-2" />
+        <Calendar className="h-4 w-4 mr-2 " />
         Prendre rendez-vous
       </Button>
     </div>
