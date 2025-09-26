@@ -4,20 +4,53 @@ import { createClient } from "@/utils/supabase/server";
 
 import { redirect } from "next/navigation";
 
-import {  UserInfo } from "@/types/user";
 
 import { getUserInfo } from "../users/userInfo";
+import { prisma } from "@repo/database";
 
 
 // Définir l'URL de redirection de base
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+export const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-interface SignUpParams {
-  email: string;
-  password: string;
-  info?: Partial<Pick<UserInfo, "name" | "phone" | "avatar_url">>;
+
+export async function signUp(
+  email: string,
+  password: string,
+  metadata?: {
+    name?: string;
+    phone?: string;
+    avatar_url?: string;
+  },
+) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${baseUrl}/auth/callback`,
+        data: {
+          name: metadata?.name,
+          phone: metadata?.phone,
+          avatar_url: metadata?.avatar_url,
+        },
+      },
+    });
+
+    if (error) {
+      return redirect("/auth/signup?message=Could not authenticate user");
+    }
+
+    return redirect(
+      `/auth/signup?message=Check email(${email}) to continue sign in process`,
+    );
+  } catch (err: any) {
+    return {
+      success: false,
+      error: err.message || "Sign up failed",
+    };
+  }
 }
-
 
 
 
@@ -50,7 +83,7 @@ export async function login( formData: FormData) {
   }
 
   const userRole = userInfo.role;
-  const orgSlug = userInfo.organization?.slug;
+  const orgSlug = userInfo.hopital?.slug;
 
   if (!userRole || !orgSlug) {
     console.log("Informations utilisateur manquantes");
@@ -115,44 +148,6 @@ export async function updateUser(email: string, password: string) {
 //   }
 // }
 
-export async function signUp(
-  email: string,
-  password: string,
-  metadata?: {
-    name?: string;
-    phone?: string;
-    avatar_url?: string;
-  },
-) {
-  try {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${baseUrl}/auth/callback`,
-        data: {
-          name: metadata?.name,
-          phone: metadata?.phone,
-          avatar_url: metadata?.avatar_url,
-        },
-      },
-    });
-
-    if (error) {
-      return redirect("/auth/signup?message=Could not authenticate user");
-    }
-
-    return redirect(
-      `/auth/signup?message=Check email(${email}) to continue sign in process`,
-    );
-  } catch (err: any) {
-    return {
-      success: false,
-      error: err.message || "Sign up failed",
-    };
-  }
-}
 
 
 
@@ -266,7 +261,7 @@ export async function updateProfile(
     if (authError) throw authError;
 
     // Mise à jour dans Prisma
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.utilisateur.update({
       where: { id: userId },
       data,
     });

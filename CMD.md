@@ -1,5 +1,6 @@
 
-
+#installer database dans web 
+pnpm add @repo/database@workspace:* --filter web
 
 # Installer toutes les dépendances au niveau du workspace
 pnpm install -w
