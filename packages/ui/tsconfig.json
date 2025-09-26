@@ -6,6 +6,6 @@
       "@repo/ui/*": ["./src/*"]
     }
   },
-  "include": [".", "../../apps/web/components/header/Header.tsx"],
+  "include": [".", "../../apps/web/components/header/Header.tsx", "../../apps/web/components/auth"],
   "exclude": ["node_modules", "dist"]
 }
