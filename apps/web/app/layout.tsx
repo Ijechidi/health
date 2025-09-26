@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "@repo/ui/globals.css";
 import { ThemeProvider } from "@repo/ui/providers/theme-provider";
 import { Toaster } from "@repo/ui/components/sonner";
+import { ReactQueryProvider } from "@/lib/react-query";
 import ConditionalHeader from "./partials/ConditionalHeader";
 
 const geistSans = localFont({
@@ -29,17 +30,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-          enableColorScheme
-        >
-          <ConditionalHeader />
-          {children}
-          <Toaster richColors />
-        </ThemeProvider>
+        <ReactQueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+            enableColorScheme
+          >
+            <ConditionalHeader />
+            {children}
+            <Toaster richColors />
+          </ThemeProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

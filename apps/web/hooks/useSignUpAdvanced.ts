@@ -1,6 +1,6 @@
-// hooks/useSignUp.ts
+// hooks/useSignUpAdvanced.ts - Version avancée avec plus de fonctionnalités React Query
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signupAuth } from '@/services/auth/signup';
 
 interface SignUpFormData {
@@ -19,7 +19,7 @@ interface SignUpResponse {
   error?: string;
 }
 
-interface UseSignUpReturn {
+interface UseSignUpAdvancedReturn {
   formData: SignUpFormData;
   loading: boolean;
   error: string | null;
@@ -27,9 +27,16 @@ interface UseSignUpReturn {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   resetForm: () => void;
+  // Nouvelles fonctionnalités React Query
+  isIdle: boolean;
+  isError: boolean;
+  isSuccess: boolean;
+  isPending: boolean;
+  errorMessage: string | null;
+  resetMutation: () => void;
 }
 
-export const useSignUp = (): UseSignUpReturn => {
+export const useSignUpAdvanced = (): UseSignUpAdvancedReturn => {
   const [formData, setFormData] = useState<SignUpFormData>({
     email: '',
     password: '',
@@ -37,8 +44,9 @@ export const useSignUp = (): UseSignUpReturn => {
   });
 
   const [validationError, setValidationError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  // Mutation pour l'inscription avec React Query
+  // Mutation avancée avec plus d'options
   const signUpMutation = useMutation<SignUpResponse, Error, SignUpMutationData>({
     mutationFn: async ({ email, password }) => {
       const result = await signupAuth(email, password);
@@ -47,11 +55,39 @@ export const useSignUp = (): UseSignUpReturn => {
       }
       return { success: true };
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       setValidationError(null);
+      
+      // Invalider les queries liées à l'authentification
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
+      
+      // Optionnel: Pré-charger des données utilisateur
+      queryClient.setQueryData(['user', variables.email], {
+        email: variables.email,
+        isAuthenticated: true,
+      });
+      
+      console.log('Inscription réussie:', data);
     },
-    onError: (error) => {
+    onError: (error, variables) => {
       setValidationError(error.message);
+      console.error('Erreur d\'inscription:', error, 'Variables:', variables);
+    },
+    onSettled: () => {
+      // Exécuté dans tous les cas (succès ou erreur)
+      console.log('Mutation terminée');
+    },
+    // Options de retry personnalisées
+    retry: (failureCount, error) => {
+      // Ne pas retry pour les erreurs de validation
+      if (error.message.includes('invalide') || error.message.includes('existe')) {
+        return false;
+      }
+      return failureCount < 2;
+    },
+    // Timeout personnalisé
+    meta: {
+      errorMessage: 'Erreur lors de l\'inscription',
     },
   });
 
@@ -120,5 +156,12 @@ export const useSignUp = (): UseSignUpReturn => {
     handleChange,
     handleSubmit,
     resetForm,
+    // Nouvelles fonctionnalités exposées
+    isIdle: signUpMutation.isIdle,
+    isError: signUpMutation.isError,
+    isSuccess: signUpMutation.isSuccess,
+    isPending: signUpMutation.isPending,
+    errorMessage: signUpMutation.error?.message || null,
+    resetMutation: signUpMutation.reset,
   };
 };

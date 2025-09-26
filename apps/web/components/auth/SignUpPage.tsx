@@ -1,9 +1,11 @@
 // components/auth/SignUpPage.tsx
-import React, { useState } from 'react';
+"use client"
+
 import { Eye, EyeOff, ArrowLeft, AlertCircle } from 'lucide-react';
 
 import { useSignUp } from '@/hooks/useSignUp';
 import { Testimonial, GlassInputWrapper, GoogleIcon, TestimonialCard } from './authComponents.js';
+import { useState } from 'react';
 
 // Types d'erreur spécifiques
 interface FormErrors {
