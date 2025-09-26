@@ -1,5 +1,3 @@
 import { prisma } from "@repo/database";
-import * as Prisma from "@repo/database";
-export { prisma, Prisma };
-
-
+export { prisma };
+export type { Prisma } from "@repo/database";
