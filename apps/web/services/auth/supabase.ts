@@ -4,19 +4,14 @@ import { createClient } from "@/utils/supabase/server";
 
 import { redirect } from "next/navigation";
 
-import {  UserInfo } from "@/types/user";
 
 import { getUserInfo } from "../users/userInfo";
+import { prisma } from "@repo/database";
 
 
 // Définir l'URL de redirection de base
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
-interface SignUpParams {
-  email: string;
-  password: string;
-  info?: Partial<Pick<UserInfo, "name" | "phone" | "avatar_url">>;
-}
 
 
 
@@ -50,7 +45,7 @@ export async function login( formData: FormData) {
   }
 
   const userRole = userInfo.role;
-  const orgSlug = userInfo.organization?.slug;
+  const orgSlug = userInfo.hopital?.slug;
 
   if (!userRole || !orgSlug) {
     console.log("Informations utilisateur manquantes");
@@ -266,7 +261,7 @@ export async function updateProfile(
     if (authError) throw authError;
 
     // Mise à jour dans Prisma
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.utilisateur.update({
       where: { id: userId },
       data,
     });
