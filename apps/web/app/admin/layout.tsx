@@ -1,17 +1,33 @@
 "use client";
 
-import React from "react";
-import AdminSidebar from "./sidebar";
+import React from 'react'
+import { usePathname } from 'next/navigation'
+import AdminSidebar from './sidebar'
+import { AuthGuard } from '@/components/auth/AuthGuard'
 
 export default function AdminLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode
+}) {
+  const pathname = usePathname()
+  
+  // Ne pas afficher la sidebar sur les pages de bienvenue
+  const isWelcomePage = pathname?.includes('/welcome')
+  
+  if (isWelcomePage) {
+    return <>{children}</>
+  }
+  
   return (
-    <div className="flex h-screen bg-gray-50">
-      <AdminSidebar />
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
-    </div>
-  );
+    <AuthGuard redirectTo="/admin/login">
+      <div className="flex h-screen bg-gray-50">
+        <AdminSidebar />
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
+      </div>
+    </AuthGuard>
+  )
 }
+

@@ -4,19 +4,16 @@ import React, { useState } from "react";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
-import { 
-  X, 
-  Stethoscope, 
-  Plus
+import {
+  X,
+  Stethoscope,
+  Save
 } from "lucide-react";
 
 interface NewSpecialtyModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreate: (specialty: {
-    nom: string;
-    description?: string;
-  }) => void;
+  onCreate: (data: { nom: string; description?: string }) => void;
   loading?: boolean;
 }
 
@@ -24,14 +21,13 @@ export function NewSpecialtyModal({ open, onOpenChange, onCreate, loading = fals
   const [nom, setNom] = useState("");
   const [description, setDescription] = useState("");
 
-  const canCreate = nom.trim() !== "";
+  const canSave = nom.trim() !== "";
 
   const handleCreate = () => {
     onCreate({
       nom: nom.trim(),
       description: description.trim() || undefined
     });
-    
     // Reset form
     setNom("");
     setDescription("");
@@ -43,7 +39,7 @@ export function NewSpecialtyModal({ open, onOpenChange, onCreate, loading = fals
     <>
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => onOpenChange(false)} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="bg-background border rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="bg-background border rounded-lg shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b">
             <div className="flex items-center gap-3">
@@ -52,7 +48,7 @@ export function NewSpecialtyModal({ open, onOpenChange, onCreate, loading = fals
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">Nouvelle spécialité</h2>
-                <p className="text-sm text-gray-500">Ajouter une spécialité médicale</p>
+                <p className="text-sm text-gray-500">Ajouter une nouvelle spécialité médicale</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8">
@@ -62,7 +58,7 @@ export function NewSpecialtyModal({ open, onOpenChange, onCreate, loading = fals
 
           {/* Content */}
           <div className="p-6 space-y-6">
-            {/* Informations de la spécialité */}
+            {/* Informations principales */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -75,7 +71,7 @@ export function NewSpecialtyModal({ open, onOpenChange, onCreate, loading = fals
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">Nom de la spécialité *</label>
                   <Input
-                    placeholder="Ex: Cardiologie, Neurologie, Pédiatrie..."
+                    placeholder="Ex: Cardiologie, Pédiatrie, Gynécologie..."
                     value={nom}
                     onChange={(e) => setNom(e.target.value)}
                     className="border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600"
@@ -85,24 +81,10 @@ export function NewSpecialtyModal({ open, onOpenChange, onCreate, loading = fals
                   <label className="text-sm font-medium text-gray-700">Description</label>
                   <textarea
                     className="min-h-[100px] w-full border rounded-md p-2 border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600"
-                    placeholder="Description de la spécialité, domaines d'expertise, types de soins..."
+                    placeholder="Description de la spécialité, domaines d'expertise..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Aperçu */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Aperçu</CardTitle>
-                <CardDescription>Vérifiez les informations avant création</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                  <p className="font-medium text-gray-900">{nom || "Nom de la spécialité"}</p>
-                  {description && <p className="text-sm text-gray-600">{description}</p>}
                 </div>
               </CardContent>
             </Card>
@@ -115,9 +97,10 @@ export function NewSpecialtyModal({ open, onOpenChange, onCreate, loading = fals
             </Button>
             <Button 
               className="bg-black hover:bg-neutral-800"
-              disabled={!canCreate || loading}
+              disabled={!canSave || loading}
               onClick={handleCreate}
             >
+              <Save className="h-4 w-4 mr-2" />
               {loading ? "Création..." : "Créer la spécialité"}
             </Button>
           </div>
@@ -126,5 +109,3 @@ export function NewSpecialtyModal({ open, onOpenChange, onCreate, loading = fals
     </>
   );
 }
-
-

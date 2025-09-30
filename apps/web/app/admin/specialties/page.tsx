@@ -1,326 +1,292 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Badge } from "@repo/ui/components/badge";
+import { useToast } from "@repo/ui/hooks/use-toast";
 import { 
-  Stethoscope, 
   Search, 
   Plus,
+  Stethoscope, 
+  Users, 
   Edit,
   Trash2,
-  Users,
-  Calendar,
-  Activity
+  Heart,
+  Baby,
+  User
 } from "lucide-react";
-import { DeleteSpecialtyModal } from "@/components/admin/DeleteSpecialtyModal";
+import { useSpecialties, useSpecialtyStats, useCreateSpecialty, useDeleteSpecialty, useUpdateSpecialty } from "@/hooks/useSpecialtyData";
 import { NewSpecialtyModal } from "@/components/admin/NewSpecialtyModal";
 import { EditSpecialtyModal } from "@/components/admin/EditSpecialtyModal";
+import { DeleteSpecialtyModal } from "@/components/admin/DeleteSpecialtyModal";
 
 interface Specialty {
   id: string;
   nom: string;
   description?: string;
-  dateCreation: string;
+  stats: {
+    totalMedecins: number;
+  };
 }
 
 export default function AdminSpecialtiesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [newSpecialtyModalOpen, setNewSpecialtyModalOpen] = useState(false);
   const [editSpecialtyModalOpen, setEditSpecialtyModalOpen] = useState(false);
-  const [selectedSpecialty, setSelectedSpecialty] = useState<Specialty | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [specialtyToEdit, setSpecialtyToEdit] = useState<Specialty | null>(null);
+  const [deleteSpecialtyModalOpen, setDeleteSpecialtyModalOpen] = useState(false);
+  const [specialtyToDelete, setSpecialtyToDelete] = useState<Specialty | null>(null);
 
-  // Mock data selon le schéma
-  const specialties = useMemo(() => ([
-    {
-      id: 's1',
-      nom: 'Cardiologie',
-      description: 'Spécialité médicale qui traite les maladies du cœur et des vaisseaux sanguins',
-      dateCreation: '2024-01-01'
-    },
-    {
-      id: 's2',
-      nom: 'Dermatologie',
-      description: 'Spécialité médicale qui traite les maladies de la peau, des cheveux et des ongles',
-      dateCreation: '2024-01-05'
-    },
-    {
-      id: 's3',
-      nom: 'Pédiatrie',
-      description: 'Spécialité médicale qui traite les enfants de la naissance à l\'adolescence',
-      dateCreation: '2024-01-10'
-    },
-    {
-      id: 's4',
-      nom: 'Gynécologie',
-      description: 'Spécialité médicale qui traite les maladies de l\'appareil génital féminin',
-      dateCreation: '2024-01-15'
-    },
-    {
-      id: 's5',
-      nom: 'Neurologie',
-      description: 'Spécialité médicale qui traite les maladies du système nerveux',
-      dateCreation: '2024-01-20'
-    },
-    {
-      id: 's6',
-      nom: 'Orthopédie',
-      description: 'Spécialité chirurgicale qui traite les maladies des os et des articulations',
-      dateCreation: '2024-01-25'
-    }
-  ]), []);
+  // Hooks pour les données
+  const { data: specialties = [], isLoading: loadingSpecialties, error: specialtiesError } = useSpecialties();
+  const { data: specialtyStats, isLoading: loadingStats } = useSpecialtyStats();
+  const { toast } = useToast();
 
-  const handleDeleteSpecialty = (specialty: Specialty) => {
-    setSelectedSpecialty(specialty);
-    setDeleteModalOpen(true);
-  };
+  // Mutations
+  const createSpecialtyMutation = useCreateSpecialty();
+  const updateSpecialtyMutation = useUpdateSpecialty();
+  const deleteSpecialtyMutation = useDeleteSpecialty();
 
-  const handleConfirmDelete = () => {
-    if (selectedSpecialty) {
-      // Mock: Simuler la suppression
-      console.log('Suppression de la spécialité:', selectedSpecialty.id);
-      // En réalité, appeler l'API de suppression
-    }
-  };
+  // Filtrage des spécialités
+  const filteredSpecialties = specialties.filter((specialty: Specialty) =>
+    specialty.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (specialty.description && specialty.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
-  const handleCreateSpecialty = async (specialtyData: any) => {
-    setCreating(true);
+  // Fonction pour créer une spécialité
+  const handleCreateSpecialty = async (data: { nom: string; description?: string }) => {
     try {
-      // Mock: Simuler la création
-      console.log('Création de la spécialité:', specialtyData);
-      // En réalité, appeler l'API de création
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulation
+      await createSpecialtyMutation.mutateAsync(data);
+      toast.success("Spécialité créée avec succès");
       setNewSpecialtyModalOpen(false);
     } catch (error) {
-      console.error('Erreur lors de la création:', error);
-    } finally {
-      setCreating(false);
+      toast.error("Erreur lors de la création de la spécialité");
     }
   };
 
+  // Fonction pour ouvrir le modal de suppression
+  const handleDeleteSpecialty = (specialty: Specialty) => {
+    setSpecialtyToDelete(specialty);
+    setDeleteSpecialtyModalOpen(true);
+  };
+
+  // Fonction pour confirmer la suppression
+  const handleConfirmDelete = async () => {
+    if (!specialtyToDelete) return;
+
+    try {
+      await deleteSpecialtyMutation.mutateAsync(specialtyToDelete.id);
+      toast.success("Spécialité supprimée avec succès");
+      setDeleteSpecialtyModalOpen(false);
+      setSpecialtyToDelete(null);
+    } catch (error) {
+      toast.error("Erreur lors de la suppression de la spécialité");
+    }
+  };
+
+  // Fonction pour éditer une spécialité
   const handleEditSpecialty = (specialty: Specialty) => {
-    setSelectedSpecialty(specialty);
+    setSpecialtyToEdit(specialty);
     setEditSpecialtyModalOpen(true);
   };
 
-  const handleSaveSpecialty = async (specialtyData: any) => {
-    setSaving(true);
+  // Fonction pour sauvegarder les modifications
+  const handleSaveSpecialty = async (data: { nom: string; description?: string }) => {
+    if (!specialtyToEdit) return;
+
     try {
-      // Mock: Simuler la sauvegarde
-      console.log('Sauvegarde de la spécialité:', specialtyData);
-      // En réalité, appeler l'API de mise à jour
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulation
+      await updateSpecialtyMutation.mutateAsync({
+        id: specialtyToEdit.id,
+        data
+      });
+      toast.success("Spécialité mise à jour avec succès");
       setEditSpecialtyModalOpen(false);
+      setSpecialtyToEdit(null);
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error);
-    } finally {
-      setSaving(false);
+      toast.error("Erreur lors de la mise à jour de la spécialité");
     }
   };
 
-  // Mock: Simuler le nombre de médecins utilisant cette spécialité
-  const getAssignedUsersCount = (specialtyId: string) => {
-    // En réalité, faire une requête pour compter les médecins avec cette spécialité
-    const mockCounts: { [key: string]: number } = {
-      's1': 12, // Cardiologie
-      's2': 8,  // Dermatologie
-      's3': 15, // Pédiatrie
-      's4': 6,  // Gynécologie
-      's5': 4,  // Neurologie
-      's6': 7   // Orthopédie
-    };
-    return mockCounts[specialtyId] || 0;
+  // Fonction pour obtenir l'icône selon la spécialité
+  const getSpecialtyIcon = (nom: string) => {
+    const lowerNom = nom.toLowerCase();
+    if (lowerNom.includes('cardio')) return <Heart className="h-5 w-5 text-red-500" />;
+    if (lowerNom.includes('pédiatrie') || lowerNom.includes('pediatrie')) return <Baby className="h-5 w-5 text-blue-500" />;
+    if (lowerNom.includes('gynéco') || lowerNom.includes('gyneco')) return <User className="h-5 w-5 text-pink-500" />;
+    return <Stethoscope className="h-5 w-5 text-green-500" />;
   };
 
-  const filteredSpecialties = useMemo(() => {
-    return specialties.filter(specialty =>
-      specialty.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      specialty.description?.toLowerCase().includes(searchTerm.toLowerCase())
+  if (loadingSpecialties) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+            <p className="mt-2 text-gray-600">Chargement des spécialités...</p>
+          </div>
+        </div>
+      </div>
     );
-  }, [specialties, searchTerm]);
+  }
+
+  if (specialtiesError) {
+    return (
+      <div className="p-6">
+        <div className="text-center">
+          <p className="text-red-600">Erreur lors du chargement des spécialités</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex-1 space-y-6 p-8 pt-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Gestion des spécialités</h1>
-          <p className="text-gray-600 mt-2">Administrer les spécialités médicales</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Spécialités</h1>
+          <p className="text-gray-600 mt-1 text-sm sm:text-base">Gestion des spécialités médicales</p>
         </div>
         <Button 
-          className="bg-black hover:bg-neutral-800"
+          className="bg-black hover:bg-neutral-800 text-sm sm:text-base"
           onClick={() => setNewSpecialtyModalOpen(true)}
         >
-          <Plus className="h-4 w-4 mr-2" />
-          Nouvelle spécialité
+          <Plus className="h-4 w-4 mr-1 sm:mr-2" />
+          <span className="hidden sm:inline">Nouvelle spécialité</span>
+          <span className="sm:hidden">Nouvelle</span>
         </Button>
       </div>
 
-      {/* Search */}
+      {/* Stats Cards */}
+      {specialtyStats && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Spécialités</CardTitle>
+              <Stethoscope className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{specialtyStats.totalSpecialties}</div>
+            </CardContent>
+          </Card>
       <Card>
-        <CardContent className="p-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Médecins</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{specialtyStats.totalMedecins}</div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Search and Filters */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
               placeholder="Rechercher une spécialité..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-gray-300 focus-visible:ring-gray-600 focus-visible:border-gray-600"
+            className="pl-10"
             />
           </div>
+      </div>
+
+      {/* Specialties List */}
+      <div className="space-y-4">
+        {filteredSpecialties.length === 0 ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <Stethoscope className="h-12 w-12 text-gray-400 mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune spécialité trouvée</h3>
+              <p className="text-gray-500 text-center">
+                {searchTerm ? "Aucune spécialité ne correspond à votre recherche." : "Commencez par créer votre première spécialité."}
+              </p>
         </CardContent>
       </Card>
-
-      {/* Specialties Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredSpecialties.map((specialty) => (
-          <Card key={specialty.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <Stethoscope className="h-6 w-6 text-purple-600" />
+        ) : (
+          filteredSpecialties.map((specialty: Specialty) => (
+            <Card key={specialty.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div className="flex items-center gap-4 flex-1 min-w-0">
+                    <div className="p-2 bg-gray-100 rounded-lg flex-shrink-0">
+                      {getSpecialtyIcon(specialty.nom)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">{specialty.nom}</h3>
+                      {specialty.description && (
+                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{specialty.description}</p>
+                      )}
+                      <div className="flex items-center gap-4 mt-2">
+                        <Badge variant="secondary" className="flex items-center gap-1 text-xs">
+                          <Users className="h-3 w-3" />
+                          <span className="hidden sm:inline">{specialty.stats.totalMedecins} médecin(s)</span>
+                          <span className="sm:hidden">{specialty.stats.totalMedecins} méd</span>
+                        </Badge>
+                      </div>
                   </div>
-                  <div>
-                    <CardTitle className="text-lg">{specialty.nom}</CardTitle>
-                    <CardDescription className="mt-1">
-                      {specialty.description}
-                    </CardDescription>
                   </div>
-                </div>
-                <div className="flex gap-1">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                   <Button 
-                    variant="ghost" 
+                      variant="outline"
                     size="sm"
                     onClick={() => handleEditSpecialty(specialty)}
+                    className="text-xs sm:text-sm"
                   >
-                    <Edit className="h-4 w-4" />
+                      <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                      <span className="hidden sm:inline">Modifier</span>
+                      <span className="sm:hidden">Mod</span>
                   </Button>
                   <Button 
-                    variant="ghost" 
+                      variant="outline"
                     size="sm" 
-                    className="text-red-600 hover:text-red-700"
                     onClick={() => handleDeleteSpecialty(specialty)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 text-xs sm:text-sm"
                   >
-                    <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
+                      <span className="hidden sm:inline">Supprimer</span>
+                      <span className="sm:hidden">Supp</span>
                   </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-blue-50 rounded-lg">
-                  <div className="flex items-center justify-center gap-1 text-blue-600 mb-1">
-                    <Users className="h-4 w-4" />
-                    <span className="text-sm font-medium">Médecins</span>
                   </div>
-              
-                </div>
-                <div className="text-center p-3 bg-green-50 rounded-lg">
-                  <div className="flex items-center justify-center gap-1 text-green-600 mb-1">
-                    <Activity className="h-4 w-4" />
-                    <span className="text-sm font-medium">Patients</span>
-                  </div>
-                  <p className="text-xl font-bold text-green-600">{specialty.patientsCount}</p>
-                </div>
-              </div> */}
-
-              <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t">
-                <span className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  Créé le {specialty.dateCreation}
-                </span>
-                {/* <Badge variant="outline">Actif</Badge> */}
               </div>
             </CardContent>
           </Card>
-        ))}
+          ))
+        )}
       </div>
 
-      {/* Summary Stats */}
-      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total spécialités</p>
-                <p className="text-2xl font-bold text-gray-900">{specialties.length}</p>
-              </div>
-              <Stethoscope className="h-8 w-8 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Médecins total</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {specialties.reduce((sum, s) => sum + s.medecinsCount, 0)}
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Patients total</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {specialties.reduce((sum, s) => sum + s.patientsCount, 0)}
-                </p>
-              </div>
-              <Activity className="h-8 w-8 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Moyenne médecin/spécialité</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {Math.round(specialties.reduce((sum, s) => sum + s.medecinsCount, 0) / specialties.length)}
-                </p>
-              </div>
-              <Users className="h-8 w-8 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Modals */}
-      {selectedSpecialty && (
-        <DeleteSpecialtyModal
-          open={deleteModalOpen}
-          onOpenChange={setDeleteModalOpen}
-          specialty={selectedSpecialty}
-          assignedUsers={getAssignedUsersCount(selectedSpecialty.id)}
-          onConfirm={handleConfirmDelete}
-        />
-      )}
-
+      {/* New Specialty Modal */}
       <NewSpecialtyModal
         open={newSpecialtyModalOpen}
         onOpenChange={setNewSpecialtyModalOpen}
         onCreate={handleCreateSpecialty}
-        loading={creating}
+        loading={createSpecialtyMutation.isPending}
       />
 
-      {selectedSpecialty && (
+      {/* Edit Specialty Modal */}
+      {specialtyToEdit && (
         <EditSpecialtyModal
           open={editSpecialtyModalOpen}
           onOpenChange={setEditSpecialtyModalOpen}
-          specialty={selectedSpecialty}
+          specialty={specialtyToEdit}
           onSave={handleSaveSpecialty}
-          loading={saving}
+          loading={updateSpecialtyMutation.isPending}
+        />
+      )}
+
+      {/* Delete Specialty Modal */}
+      {specialtyToDelete && (
+        <DeleteSpecialtyModal
+          open={deleteSpecialtyModalOpen}
+          onOpenChange={setDeleteSpecialtyModalOpen}
+          specialty={specialtyToDelete}
+          onConfirm={handleConfirmDelete}
+          loading={deleteSpecialtyMutation.isPending}
         />
       )}
     </div>

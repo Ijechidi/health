@@ -4,11 +4,13 @@ import React, { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
 import { Button } from "@repo/ui/components/button";
 import { Badge } from "@repo/ui/components/badge";
-import { Calendar, Plus, Clock, User, MapPin } from "lucide-react";
+import { Calendar, Plus, Clock, User, MapPin, Building2 } from "lucide-react";
 import { DoctorNewAppointmentModal } from "@/components/doctor/DoctorNewAppointmentModal";
+import { useSelectedHospital } from "@/hooks/useSelectedHospital";
 import Link from 'next/link';
 
 export default function DoctorSchedulePage() {
+  const { selectedHospitalId, selectedHospital } = useSelectedHospital();
   const [newRdvOpen, setNewRdvOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [appointments, setAppointments] = useState([
@@ -89,8 +91,16 @@ export default function DoctorSchedulePage() {
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
       {/* Header */}
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Planning</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Planning</h2>
+          {selectedHospital && (
+            <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+              <Building2 className="h-4 w-4" />
+              <span>Hôpital: {selectedHospital.nom}</span>
+            </div>
+          )}
+        </div>
         <div className="flex items-center space-x-2">
           <Button variant="outline">
             <Calendar className="mr-2 h-4 w-4" />

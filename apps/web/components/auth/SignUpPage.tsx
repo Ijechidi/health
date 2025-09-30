@@ -4,7 +4,7 @@
 import { Eye, EyeOff, ArrowLeft, AlertCircle } from 'lucide-react';
 
 import { useSignUp } from '@/hooks/useSignUp';
-import { Testimonial, GlassInputWrapper, GoogleIcon, TestimonialCard } from './authComponents.js';
+import { Testimonial, GlassInputWrapper, GoogleIcon, TestimonialCard } from './authComponents';
 import { useState } from 'react';
 
 // Types d'erreur spécifiques
@@ -38,7 +38,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   
-  const { formData, loading, error, success, handleChange, handleSubmit } = useSignUp();
+  const { formData, isLoading, error, success, handleChange, handleSubmit } = useSignUp();
 
   // Fonction de validation des champs
   const validateField = (name: string, value: string): string | undefined => {
@@ -82,21 +82,41 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
           <div className="animate-element animate-delay-100 mb-6">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-semibold mb-2">Inscription réussie !</h2>
-            <p className="text-muted-foreground">
-              Un email de confirmation a été envoyé à <strong>{formData.email}</strong>. 
-              Veuillez vérifier votre boîte de réception pour activer votre compte.
+            <h2 className="text-2xl font-semibold mb-2">Vérifiez votre email</h2>
+            <p className="text-muted-foreground mb-4">
+              Nous avons envoyé un lien de confirmation à <strong>{formData.email}</strong>
+            </p>
+            <div className="bg-blue-50 border flex flex-col items-center justify-center border-blue-200 rounded-lg p-4 mb-6">
+              <p className="text-sm text-blue-800">
+                <strong>Prochaines étapes :</strong>
+              </p>
+              <ul className="text-sm text-blue-700 mt-2 space-y-1 text-left">
+                <li>• Vérifiez votre boîte de réception</li>
+                <li>• Cliquez sur le lien de confirmation</li>
+                <li>• Revenez ici pour vous connecter</li>
+              </ul>
+            </div>
+            <p className="text-sm text-muted-foreground mb-6">
+              Si vous ne recevez pas l'email dans quelques minutes, vérifiez votre dossier spam.
             </p>
           </div>
+          <div className="space-y-3">
           <button 
             onClick={onSignIn}
-            className="animate-element animate-delay-200 rounded-2xl bg-primary px-6 py-3 font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="animate-element animate-delay-200 w-full rounded-2xl bg-primary px-6 py-3 font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
           >
             Se connecter
           </button>
+            <button 
+              onClick={() => window.location.reload()}
+              className="animate-element animate-delay-300 w-full rounded-2xl border border-border px-6 py-3 font-medium text-foreground hover:bg-secondary transition-colors"
+            >
+              Réessayer l'inscription
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -112,6 +132,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
               <button 
                 onClick={onSignIn}
                 className="p-2 hover:bg-secondary rounded-lg transition-colors"
+                aria-label="Retour à la page de connexion"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
@@ -215,10 +236,10 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
 
               <button 
                 type="submit" 
-                disabled={loading}
+                disabled={isLoading}
                 className="animate-element animate-delay-600 w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Inscription en cours...' : 'Créer mon compte'}
+                {isLoading ? 'Inscription en cours...' : 'Créer mon compte'}
               </button>
             </form>
 
@@ -229,7 +250,7 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
 
             <button 
               onClick={onGoogleSignIn} 
-              disabled={loading}
+              disabled={isLoading}
               className="animate-element animate-delay-800 w-full flex items-center justify-center gap-3 border border-border rounded-2xl py-4 hover:bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <GoogleIcon />
@@ -252,7 +273,10 @@ export const SignUpPage: React.FC<SignUpPageProps> = ({
       {/* Right column: hero image + testimonials */}
       {heroImageSrc && (
         <section className="hidden md:block flex-1 relative p-4">
-          <div className="animate-slide-right animate-delay-300 absolute inset-4 rounded-3xl bg-cover bg-center" style={{ backgroundImage: `url(${heroImageSrc})` }}></div>
+          <div 
+            className="animate-slide-right animate-delay-300 absolute inset-4 rounded-3xl bg-cover bg-center" 
+            style={{ backgroundImage: `url(${heroImageSrc})` }}
+          ></div>
           {testimonials.length > 0 && (
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 px-8 w-full justify-center">
               {testimonials[0] && <TestimonialCard testimonial={testimonials[0]} delay="animate-delay-1000" />}

@@ -3,6 +3,7 @@
 import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
 import { Button } from "@repo/ui/components/button";
+import { useToast } from "@repo/ui/hooks/use-toast";
 import { 
   Users, 
   Building2, 
@@ -10,10 +11,41 @@ import {
   Calendar,
   TrendingUp,
   AlertCircle,
-  ArrowRight
+  ArrowRight,
+  Clock,
+  CheckCircle,
+  XCircle
 } from "lucide-react";
+import { 
+  useUserStats, 
+  useHospitalStats, 
+  useSpecialtyStats, 
+  useDoctorStats 
+} from "@/hooks/useAdminData";
 
 export default function AdminHomePage() {
+  const { toast } = useToast();
+  
+  // Récupération des statistiques réelles
+  const { data: userStats, isLoading: loadingUsers, error: usersError } = useUserStats();
+  const { data: hospitalStats, isLoading: loadingHospitals, error: hospitalsError } = useHospitalStats();
+  const { data: specialtyStats, isLoading: loadingSpecialties, error: specialtiesError } = useSpecialtyStats();
+  const { data: doctorStats, isLoading: loadingDoctors, error: doctorsError } = useDoctorStats();
+
+  // Gestion des erreurs
+  if (usersError) {
+    toast.error("Erreur lors du chargement des statistiques utilisateurs");
+  }
+  if (hospitalsError) {
+    toast.error("Erreur lors du chargement des statistiques hôpitaux");
+  }
+  if (specialtiesError) {
+    toast.error("Erreur lors du chargement des statistiques spécialités");
+  }
+  if (doctorsError) {
+    toast.error("Erreur lors du chargement des statistiques médecins");
+  }
+
   const quickActions = [
     {
       title: "Gérer les utilisateurs",
@@ -37,28 +69,49 @@ export default function AdminHomePage() {
       color: "bg-purple-600"
     },
     {
-      title: "Assignations",
-      description: "Attribuer les rôles",
+      title: "Activation Médecins",
+      description: "Activer les comptes médecins",
       icon: Calendar,
       href: "/admin/assignments",
       color: "bg-orange-600"
     }
   ];
 
+  // Statistiques réelles
   const stats = [
-    { label: "Utilisateurs totaux", value: "200" },
-    { label: "Médecins ", value: "100" },
-    { label: "Patients", value: "100" },
-    { label: "Hôpitaux", value: "12" }
+    { 
+      label: "Utilisateurs totaux", 
+      value: userStats?.totalUsers?.toString() || "0",
+      icon: Users,
+      color: "text-blue-600"
+    },
+    { 
+      label: "Médecins", 
+      value: doctorStats?.totalDoctors?.toString() || "0",
+      icon: Stethoscope,
+      color: "text-green-600"
+    },
+    { 
+      label: "Patients", 
+      value: userStats?.totalPatients?.toString() || "0",
+      icon: Users,
+      color: "text-purple-600"
+    },
+    { 
+      label: "Hôpitaux", 
+      value: hospitalStats?.totalHospitals?.toString() || "0",
+      icon: Building2,
+      color: "text-orange-600"
+    }
   ];
 
   return (
-    <div className="flex-1 space-y-6 p-8 pt-6">
+    <div className="flex-1 space-y-4 sm:space-y-6 p-4 sm:p-6 lg:p-8 pt-4 sm:pt-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Administration</h1>
-          <p className="text-gray-600 mt-2">Gestion globale du système de santé</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Administration</h1>
+          <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Gestion globale du système de santé</p>
         </div>
         {/* <div className="flex items-center gap-3">
           <Button className="bg-black hover:bg-neutral-800">
@@ -69,30 +122,65 @@ export default function AdminHomePage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <Card key={index}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        {stats.map((stat, index) => {
+          const IconComponent = stat.icon;
+          const isLoading = loadingUsers || loadingHospitals || loadingSpecialties || loadingDoctors;
+          
+          return (
+            <Card key={index}>
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">{stat.label}</p>
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900">
+                      {isLoading ? "..." : stat.value}
+                    </p>
+                  </div>
+                  <div className={`p-2 sm:p-3 rounded-lg bg-gray-100 ${stat.color} flex-shrink-0 ml-2`}>
+                    <IconComponent className="h-4 w-4 sm:h-6 sm:w-6" />
+                  </div>
                 </div>
-                {/* <div className={`flex items-center gap-1 text-sm ${
-                  stat.trend === 'up' ? 'text-green-600' : 
-                  stat.trend === 'down' ? 'text-red-600' : 'text-gray-600'
-                }`}>
-                  <TrendingUp className="h-4 w-4" />
-                  {stat.change}
-                </div> */}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
+      {/* Médecins en attente d'activation */}
+      {doctorStats?.pendingDoctors && doctorStats.pendingDoctors > 0 && (
+        <Card className="border-orange-200 bg-orange-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-800">
+              <Clock className="h-5 w-5" />
+              Médecins en attente d'activation
+            </CardTitle>
+            <CardDescription>
+              {doctorStats.pendingDoctors} médecin(s) en attente de validation
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-orange-600" />
+                <span className="text-sm text-orange-700">
+                  Action requise pour {doctorStats.pendingDoctors} compte(s)
+                </span>
+              </div>
+              <Button 
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+                onClick={() => window.location.href = '/admin/assignments'}
+              >
+                Voir les comptes
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {quickActions.map((action, index) => {
           const Icon = action.icon;
           return (
@@ -105,7 +193,11 @@ export default function AdminHomePage() {
                 <CardDescription>{action.description}</CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-between p-0 h-auto"
+                  onClick={() => window.location.href = action.href}
+                >
                   <span className="text-sm font-medium">Accéder</span>
                   <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -113,10 +205,10 @@ export default function AdminHomePage() {
             </Card>
           );
         })}
-      </div>
+      </div> */}
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

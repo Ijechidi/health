@@ -4,14 +4,23 @@ import { useMutation } from '@tanstack/react-query';
 import { signupAuth } from '@/services/auth/signup';
 
 interface SignUpFormData {
+  nom: string;
+  prenom: string;
   email: string;
+  phone: string;
   password: string;
   confirmPassword: string;
+  speciality?: string;
+  dateNaissance?: string;
+  sexe?: string;
 }
 
 interface SignUpMutationData {
   email: string;
   password: string;
+  nom?: string;
+  prenom?: string;
+  role?: string;
 }
 
 interface SignUpResponse {
@@ -21,27 +30,34 @@ interface SignUpResponse {
 
 interface UseSignUpReturn {
   formData: SignUpFormData;
-  loading: boolean;
+  isLoading: boolean;
   error: string | null;
   success: boolean;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   resetForm: () => void;
+  getLoginPath: () => string;
 }
 
-export const useSignUp = (): UseSignUpReturn => {
+export const useSignUp = (role?: 'ADMIN' | 'MEDECIN' | 'PATIENT'): UseSignUpReturn => {
   const [formData, setFormData] = useState<SignUpFormData>({
+    nom: '',
+    prenom: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
+    speciality: '',
+    dateNaissance: '',
+    sexe: '',
   });
 
   const [validationError, setValidationError] = useState<string | null>(null);
 
   // Mutation pour l'inscription avec React Query
   const signUpMutation = useMutation<SignUpResponse, Error, SignUpMutationData>({
-    mutationFn: async ({ email, password }) => {
-      const result = await signupAuth(email, password);
+    mutationFn: async ({ email, password, nom, prenom, role: userRole }) => {
+      const result = await signupAuth(email, password, nom, prenom, userRole);
       if (result.error) {
         throw new Error(result.error);
       }
@@ -55,7 +71,7 @@ export const useSignUp = (): UseSignUpReturn => {
     },
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -66,8 +82,8 @@ export const useSignUp = (): UseSignUpReturn => {
   };
 
   const validateForm = (): boolean => {
-    if (!formData.email || !formData.password) {
-      setValidationError('L\'email et le mot de passe sont obligatoires');
+    if (!formData.nom || !formData.prenom || !formData.email || !formData.password) {
+      setValidationError('Tous les champs obligatoires doivent être remplis');
       return false;
     }
 
@@ -99,26 +115,49 @@ export const useSignUp = (): UseSignUpReturn => {
     signUpMutation.mutate({
       email: formData.email,
       password: formData.password,
+      nom: formData.nom,
+      prenom: formData.prenom,
+      role: role,
     });
   };
 
   const resetForm = () => {
     setFormData({
+      nom: '',
+      prenom: '',
       email: '',
+      phone: '',
       password: '',
       confirmPassword: '',
+      speciality: '',
+      dateNaissance: '',
+      sexe: '',
     });
     setValidationError(null);
     signUpMutation.reset();
   };
 
+  const getLoginPath = () => {
+    switch (role) {
+      case 'ADMIN':
+        return '/admin/login';
+      case 'MEDECIN':
+        return '/doctor/login';
+      case 'PATIENT':
+        return '/patient/login';
+      default:
+        return '/login';
+    }
+  };
+
   return {
     formData,
-    loading: signUpMutation.isPending,
+    isLoading: signUpMutation.isPending,
     error: validationError || signUpMutation.error?.message || null,
     success: signUpMutation.isSuccess,
     handleChange,
     handleSubmit,
     resetForm,
+    getLoginPath,
   };
 };

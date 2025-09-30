@@ -1,130 +1,157 @@
 "use client";
 
 import React from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from "@repo/ui/components/sheet";
 import { Button } from "@repo/ui/components/button";
-import { AlertTriangle, Building2 } from "lucide-react";
-
-interface Hospital {
-  id: string;
-  nom: string;
-  adresse: string;
-  description?: string;
-  contact: string;
-  localisation?: string;
-}
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
+import { 
+  X, 
+  Building2, 
+  AlertTriangle,
+  Trash2
+} from "lucide-react";
 
 interface DeleteHospitalModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  hospital: Hospital | null;
+  hospital: {
+    id: string;
+    nom: string;
+    adresse: string;
+    stats: {
+      totalUsers: number;
+      totalMedecins: number;
+      totalPatients: number;
+      totalAdmins: number;
+    };
+  };
   onConfirm: () => void;
   loading?: boolean;
 }
 
-export function DeleteHospitalModal({
-  open,
-  onOpenChange,
-  hospital,
-  onConfirm,
-  loading = false,
+export function DeleteHospitalModal({ 
+  open, 
+  onOpenChange, 
+  hospital, 
+  onConfirm, 
+  loading = false 
 }: DeleteHospitalModalProps) {
-  if (!hospital) return null;
+  const hasUsers = hospital.stats.totalUsers > 0;
 
-  const handleConfirm = () => {
-    onConfirm();
-  };
+  if (!open) return null;
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-[500px]">
-        <SheetHeader>
-          <SheetTitle className="flex items-center gap-2 text-red-600">
-            <AlertTriangle className="h-5 w-5" />
-            Supprimer l'hôpital
-          </SheetTitle>
-          <SheetDescription>
-            Cette action est irréversible. L'hôpital sera définitivement supprimé.
-          </SheetDescription>
-        </SheetHeader>
-
-        <div className="space-y-4">
-          {/* Informations sur l'hôpital */}
-          <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+    <>
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => onOpenChange(false)} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="bg-background border rounded-lg shadow-xl w-full max-w-md">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                <Building2 className="h-5 w-5" />
+              <div className="p-2 bg-red-100 rounded-lg">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">{hospital.nom}</h3>
-                <p className="text-sm text-gray-600">{hospital.adresse}</p>
+                <h2 className="text-xl font-semibold text-gray-900">Supprimer l'hôpital</h2>
+                <p className="text-sm text-gray-500">Cette action est irréversible</p>
               </div>
             </div>
-
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-gray-700">Contact:</span>
-                <span className="text-gray-600">{hospital.contact}</span>
-              </div>
-
-              {hospital.localisation && (
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-gray-700">Localisation:</span>
-                  <span className="text-gray-600">{hospital.localisation}</span>
-                </div>
-              )}
-
-              {hospital.description && (
-                <div className="flex items-start gap-2">
-                  <span className="font-medium text-gray-700">Description:</span>
-                  <span className="text-gray-600">{hospital.description}</span>
-                </div>
-              )}
-            </div>
+            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8">
+              <X className="h-4 w-4" />
+            </Button>
           </div>
 
-          {/* Avertissement */}
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-red-800">
-                <p className="font-medium mb-1">Attention !</p>
-                <p>
-                  La suppression de cet hôpital supprimera également toutes les assignations 
-                  des utilisateurs à cet hôpital. Cette action ne peut pas être annulée.
+          {/* Content */}
+          <div className="p-6">
+            {hasUsers ? (
+              // Si des utilisateurs sont liés
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-red-800">Impossible de supprimer</p>
+                    <p className="text-sm text-red-600">
+                      Cet hôpital a {hospital.stats.totalUsers} utilisateur(s) actif(s)
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">
+                    <strong>Utilisateurs liés :</strong>
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span>{hospital.stats.totalUsers} utilisateurs</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span>{hospital.stats.totalMedecins} médecins</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <span>{hospital.stats.totalPatients} patients</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <span>{hospital.stats.totalAdmins} admins</span>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-sm text-gray-600">
+                  Vous devez d'abord réassigner ou supprimer tous les utilisateurs liés à cet hôpital.
                 </p>
               </div>
-            </div>
+            ) : (
+              // Si aucun utilisateur n'est lié
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium text-yellow-800">Confirmer la suppression</p>
+                    <p className="text-sm text-yellow-600">
+                      Cette action supprimera définitivement l'hôpital
+                    </p>
+                  </div>
+                </div>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Building2 className="h-4 w-4" />
+                      {hospital.nom}
+                    </CardTitle>
+                    <CardDescription>{hospital.adresse}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600">
+                      Aucun utilisateur n'est lié à cet hôpital. La suppression est autorisée.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="p-6 border-t flex justify-end gap-2">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Annuler
+            </Button>
+            {!hasUsers && (
+              <Button 
+                className="bg-red-600 hover:bg-red-700 text-white"
+                disabled={loading}
+                onClick={onConfirm}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                {loading ? "Suppression..." : "Supprimer définitivement"}
+              </Button>
+            )}
           </div>
         </div>
-
-        <SheetFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-          >
-            Annuler
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleConfirm}
-            disabled={loading}
-          >
-            {loading ? "Suppression..." : "Supprimer l'hôpital"}
-          </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+      </div>
+    </>
   );
 }
-

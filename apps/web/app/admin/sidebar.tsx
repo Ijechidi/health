@@ -1,9 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@repo/ui/components/button";
+import { useToast } from "@repo/ui/hooks/use-toast";
+import { logoutAuth } from "@/lib/services/auth/logout";
+import { LogoutModal } from "@/components/admin/LogoutModal";
 import { 
   Users, 
   Building2, 
@@ -12,7 +15,9 @@ import {
   LogOut,
   Shield,
   BarChart3,
-  UserCheck
+  UserCheck,
+  Menu,
+  X
 } from "lucide-react";
 
 const navigationItems = [
@@ -41,10 +46,10 @@ const navigationItems = [
     description: "Gestion des spécialités"
   },
   {
-    name: "Assignations",
-    href: "/admin/assignments",
-    icon: UserCheck,
-    description: "Rôles et assignations"
+    name: "Demandes Médecins",
+    href: "/admin/doctors",
+    icon: Stethoscope,
+    description: "Approbation des médecins"
   },
   {
     name: "Paramètres",
@@ -56,9 +61,64 @@ const navigationItems = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { toast } = useToast();
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    try {
+      setIsLoggingOut(true);
+      toast.info("Déconnexion en cours...");
+      
+      const result = await logoutAuth();
+      
+      if (result.success) {
+        toast.success("Déconnexion réussie");
+        setShowLogoutModal(false);
+      } else {
+        toast.error(result.error || "Erreur lors de la déconnexion");
+      }
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+      toast.error("Erreur lors de la déconnexion");
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 flex flex-col">
+    <>
+      {/* Mobile Menu Button */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIsOpen(!isOpen)}
+          className="bg-white shadow-lg"
+        >
+          {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
+      </div>
+
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={`
+        fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 flex flex-col
+        transform transition-transform duration-300 ease-in-out
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center gap-3">
@@ -101,11 +161,25 @@ export default function AdminSidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-gray-200">
-        <Button variant="ghost" className="w-full justify-start text-gray-700 hover:text-black">
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start text-gray-700 hover:text-red-600 hover:bg-red-50"
+          onClick={handleLogoutClick}
+          disabled={isLoggingOut}
+        >
           <LogOut className="h-5 w-5 mr-3" />
-          Déconnexion
+          {isLoggingOut ? "Déconnexion..." : "Déconnexion"}
         </Button>
       </div>
-    </div>
+      </div>
+
+      {/* Logout Modal */}
+      <LogoutModal
+        open={showLogoutModal}
+        onOpenChange={setShowLogoutModal}
+        onConfirm={handleLogoutConfirm}
+        loading={isLoggingOut}
+      />
+    </>
   );
 }

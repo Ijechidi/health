@@ -4,6 +4,8 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo/ui/components/card";
 import { Button } from "@repo/ui/components/button";
 import { Badge } from "@repo/ui/components/badge";
+import { HospitalSelector } from "@/components/doctor/HospitalSelector";
+import { useSelectedHospital } from "@/hooks/useSelectedHospital";
 import { 
   Calendar, 
   Users, 
@@ -14,10 +16,12 @@ import {
   TrendingUp,
   Activity,
   UserCheck,
-  FileCheck
+  FileCheck,
+  Building2
 } from "lucide-react";
 
 export default function DoctorDashboardPage() {
+  const { selectedHospitalId, selectedHospital, changeHospital } = useSelectedHospital();
   const todayAppointments = [
     {
       id: "1",
@@ -67,11 +71,13 @@ export default function DoctorDashboardPage() {
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
       {/* Header */}
-      <div className="flex items-center justify-between space-y-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
         <div className="flex items-center space-x-2">
-          
-          
+          <HospitalSelector 
+            onHospitalChange={changeHospital}
+            currentHospitalId={selectedHospitalId}
+          />
         </div>
       </div>
 

@@ -1,0 +1,206 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+/// =========================
+/// 📌 Utilisateur global
+/// =========================
+model Utilisateur {
+  id                  String               @id @default(uuid())
+  nom                 String
+  prenom              String?
+  email               String               @unique
+  telephone           String?
+  dateCreation        DateTime             @default(now())
+  status              StatusUtilisateur   @default(ACTIF)
+  administrateur      Administrateur?
+  medecin             Medecin?
+  patient             Patient?
+  rendezVous          RendezVous[]
+  utilisateurHopitals UtilisateurHopital[]
+}
+
+/// =========================
+/// 📌 Administrateur
+/// =========================
+model Administrateur {
+  id          String        @id @default(uuid())
+  fonction    FonctionAdmin @default(gestionnaire)
+  userId      String        @unique
+  utilisateur Utilisateur   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// =========================
+/// 📌 Patient
+/// =========================
+model Patient {
+  id            String        @id @default(uuid())
+  dateNaissance DateTime
+  adresse       String?
+  groupeSanguin GroupeSanguin @default(INCONNU)
+  poids         Float?
+  taille        Float?
+  sexe          Sexe          @default(Homme)
+  userId        String        @unique
+  documents     Document[]
+  utilisateur   Utilisateur   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rendezVous    RendezVous[]
+}
+
+/// =========================
+/// 📌 Medecin
+/// =========================
+model Medecin {
+  id              String           @id @default(uuid())
+  specialiteId    String
+  numLicence      String           @unique
+  anneeExperience Int?
+  titre           String
+  userId          String           @unique
+  statutApproval  StatutApproval   @default(EN_ATTENTE)
+  specialite      Specialite       @relation(fields: [specialiteId], references: [id])
+  utilisateur     Utilisateur      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recommandations Recommandation[]
+  rendezVous      RendezVous[]
+}
+
+/// =========================
+/// 📌 Document
+/// =========================
+model Document {
+  id           String   @id @default(uuid())
+  titre        String
+  description  String?
+  dateCreation DateTime @default(now())
+  patientId    String?
+  /// URL du fichier document
+  url          String
+  patient      Patient? @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+/// =========================
+/// 📌 RendezVous
+/// =========================
+model RendezVous {
+  id            String           @id @default(uuid())
+  date          DateTime
+  heure         String
+  statut        StatutRendezVous @default(EN_ATTENTE)
+  utilisateurId String
+  medecinId     String
+  patientId     String
+  medecin       Medecin          @relation(fields: [medecinId], references: [id])
+  patient       Patient          @relation(fields: [patientId], references: [id])
+  utilisateur   Utilisateur      @relation(fields: [utilisateurId], references: [id])
+}
+
+/// =========================
+/// 📌 Hopital
+/// =========================
+model Hopital {
+  id                  String               @id @default(uuid())
+  nom                 String
+  slug                String? @unique
+  adresse             String
+  description         String?
+  contact             String
+  localisation        String?
+  utilisateurHopitals UtilisateurHopital[]
+}
+
+/// =========================
+/// 📌 Specialite
+/// =========================
+model Specialite {
+  id          String    @id @default(uuid())
+  nom         String
+  description String?
+  medecins    Medecin[]
+}
+
+/// =========================
+/// 📌 Recommandation
+/// =========================
+model Recommandation {
+  id        String   @id @default(uuid())
+  contenu   String
+  medecinId String
+  date      DateTime @default(now())
+  medecin   Medecin  @relation(fields: [medecinId], references: [id], onDelete: Cascade)
+}
+
+/// =========================
+/// 📌 UtilisateurHopital
+/// =========================
+model UtilisateurHopital {
+  id            String      @id @default(uuid())
+  utilisateurId String
+  hopitalId     String
+  role          Role
+  dateDebut     DateTime    @default(now())
+  dateFin       DateTime?
+  hopital       Hopital     @relation(fields: [hopitalId], references: [id], onDelete: Cascade)
+  utilisateur   Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+
+  @@unique([utilisateurId, hopitalId, role])
+}
+
+/// =========================
+/// 📌 Enumération des rôles
+/// =========================
+/// - patient : utilisateur venant se faire soigner.
+/// - medecin : médecin attaché à l’hôpital.
+/// - admin : administrateur de l’hôpital.
+enum Role {
+  patient
+  medecin
+  admin
+}
+
+enum FonctionAdmin {
+  gestionnaire
+  super_admin
+}
+
+enum Sexe {
+  Homme
+  Femme
+  Autre
+}
+
+enum GroupeSanguin {
+  A_POSITIF
+  A_NEGATIF
+  B_POSITIF
+  B_NEGATIF
+  AB_POSITIF
+  AB_NEGATIF
+  O_POSITIF
+  O_NEGATIF
+  INCONNU
+}
+
+enum StatutRendezVous {
+  CONFIRME
+  ANNULE
+  EN_ATTENTE
+  TERMINE
+}
+
+enum StatusUtilisateur {
+  ACTIF
+  INACTIF
+}
+
+enum StatutApproval {
+  EN_ATTENTE
+  APPROUVE
+  REJETE
+}

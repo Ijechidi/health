@@ -19,6 +19,7 @@ model Utilisateur {
   email               String               @unique
   telephone           String?
   dateCreation        DateTime             @default(now())
+  status              StatusUtilisateur    @default(ACTIF)
   administrateur      Administrateur?
   medecin             Medecin?
   patient             Patient?
@@ -63,6 +64,7 @@ model Medecin {
   anneeExperience Int?
   titre           String
   userId          String           @unique
+  statutApproval  StatutApproval   @default(EN_ATTENTE)
   specialite      Specialite       @relation(fields: [specialiteId], references: [id])
   utilisateur     Utilisateur      @relation(fields: [userId], references: [id], onDelete: Cascade)
   recommandations Recommandation[]
@@ -105,11 +107,11 @@ model RendezVous {
 model Hopital {
   id                  String               @id @default(uuid())
   nom                 String
-  slug                String? @unique
   adresse             String
   description         String?
   contact             String
   localisation        String?
+  slug                String?              @unique
   utilisateurHopitals UtilisateurHopital[]
 }
 
@@ -190,4 +192,15 @@ enum StatutRendezVous {
   ANNULE
   EN_ATTENTE
   TERMINE
+}
+
+enum StatusUtilisateur {
+  ACTIF
+  INACTIF
+}
+
+enum StatutApproval {
+  EN_ATTENTE
+  APPROUVE
+  REJETE
 }

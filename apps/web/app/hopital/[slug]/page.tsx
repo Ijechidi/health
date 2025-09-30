@@ -10,7 +10,9 @@ import { HospitalDetailPageProps } from "./hopitals";
 import { useHospitalDetail } from "./useHospitalDetail";
 
 
-export default function HospitalDetailPage({ params }: HospitalDetailPageProps) {
+export default async function HospitalDetailPage({ params }: HospitalDetailPageProps) {
+  const { slug } = await params;
+  
   const {
     hospital,
     specialties,
@@ -18,7 +20,7 @@ export default function HospitalDetailPage({ params }: HospitalDetailPageProps) 
     setSelectedSpecialty,
     handleBookAppointment,
     handleBack
-  } = useHospitalDetail(params.slug);
+  } = useHospitalDetail(slug);
 
   return (
     <div className="min-h-screen bg-white">

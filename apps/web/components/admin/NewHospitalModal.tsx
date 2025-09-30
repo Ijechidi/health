@@ -56,26 +56,26 @@ export function NewHospitalModal({ open, onOpenChange, onCreate, loading = false
   return (
     <>
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50" onClick={() => onOpenChange(false)} />
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="bg-background border rounded-lg shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
+        <div className="bg-background border rounded-lg shadow-xl w-full max-w-xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 rounded-lg">
-                <Building2 className="h-6 w-6 text-gray-600" />
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-1.5 sm:p-2 bg-gray-100 rounded-lg">
+                <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-gray-600" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Nouvel hôpital</h2>
-                <p className="text-sm text-gray-500">Ajouter un établissement de santé</p>
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Nouvel hôpital</h2>
+                <p className="text-xs sm:text-sm text-gray-500">Ajouter un établissement de santé</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-8 w-8">
-              <X className="h-4 w-4" />
+            <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="h-7 w-7 sm:h-8 sm:w-8">
+              <X className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           </div>
 
           {/* Content */}
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             {/* Informations principales */}
             <Card>
               <CardHeader>
@@ -183,6 +183,8 @@ export function NewHospitalModal({ open, onOpenChange, onCreate, loading = false
     </>
   );
 }
+
+
 
 
 

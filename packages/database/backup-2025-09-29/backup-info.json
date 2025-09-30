@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-09-29T20:09:57.013Z",
+  "backupType": "simple",
+  "description": "Sauvegarde avant migration - ajout statutApproval",
+  "files": [
+    "schema.prisma",
+    "migrations/",
+    ".env"
+  ],
+  "instructions": [
+    "1. Ceci est une sauvegarde des fichiers de configuration",
+    "2. Les données de la base ne sont pas sauvegardées ici",
+    "3. Pour restaurer: copier les fichiers depuis ce dossier",
+    "4. La migration ajoute seulement un champ avec valeur par défaut"
+  ]
+}

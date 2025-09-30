@@ -1,2 +1,2 @@
-export { DoctorDashboardHeader } from "./DoctorDashboardHeader";
+export { DoctorHeader } from "./DoctorDashboardHeader";
 export { DoctorStatsSection } from "./DoctorStatsSection";

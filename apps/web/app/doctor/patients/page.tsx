@@ -5,10 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@repo
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@repo/ui/components/select";
-import { Users, Search, Eye, Phone, Mail, Calendar } from "lucide-react";
+import { Users, Search, Eye, Phone, Mail, Calendar, Building2 } from "lucide-react";
 import { PatientDetailsModal } from "@/components/doctor/PatientDetailsModal";
+import { useSelectedHospital } from "@/hooks/useSelectedHospital";
 
 export default function DoctorPatientsPage() {
+  const { selectedHospitalId, selectedHospital } = useSelectedHospital();
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -83,9 +85,16 @@ export default function DoctorPatientsPage() {
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
       {/* Header */}
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Patients</h2>
-        
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Patients</h2>
+          {selectedHospital && (
+            <div className="flex items-center gap-2 mt-1 text-sm text-gray-600">
+              <Building2 className="h-4 w-4" />
+              <span>Hôpital: {selectedHospital.nom}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Les filtres sont déplacés dans la carte de la liste */}

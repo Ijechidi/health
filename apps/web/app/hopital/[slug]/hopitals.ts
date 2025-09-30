@@ -30,7 +30,7 @@ export interface Specialty {
 }
 
 export interface HospitalDetailPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
